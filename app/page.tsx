@@ -65,10 +65,11 @@ export default function ViosCodeMatriz() {
 
         ) : (
 
-          /* 📸 LA FOTO Y BIOGRAFÍA (Mismo diseño claro premium de antes) */
-          <div className="flex flex-col md:flex-row items-center gap-12 w-full animate-[fadeIn_1s_ease-in-out]">
+          /* 📸 LA FOTO Y BIOGRAFÍA (Ahora alineada a la izquierda en celulares) */
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-12 w-full animate-[fadeIn_1s_ease-in-out]">
             
-            <div className="w-24 md:w-50 shrink-0 relative">
+            {/* Contenedor de la foto centrado en móviles, pero manteniendo el texto a la izquierda */}
+            <div className="w-24 md:w-50 shrink-0 relative mx-auto md:mx-0">
               <img 
                 src="/tu_foto.jpeg" 
                 alt="Emmanuel Osorio" 
@@ -76,7 +77,8 @@ export default function ViosCodeMatriz() {
               />
             </div>
             
-            <div className="flex flex-col gap-4 text-center md:text-left md:ml-25 text-black">
+            {/* CAMBIO AQUÍ: Se reemplazó "text-center" por "text-left" en este div contenedor */}
+            <div className="flex flex-col gap-4 text-left md:ml-25 text-black w-full">
               <h2 className="font-montserrat text-4xl md:text-6xl font-black tracking-tight">
                 {idioma === 'es' ? 'Redefiniendo la' : 'Redefining the'} <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-600">
@@ -84,7 +86,8 @@ export default function ViosCodeMatriz() {
                 </span>
               </h2>
               <h3 className="font-montserrat text-xl tracking-widest font-bold uppercase">Emmanuel Osorio — CEO & Founder</h3>
-              <p className="text-gray-700 text-lg leading-relaxed max-w-2xl mt-4 font-normal">
+              {/* Párrafo justificado a la izquierda */}
+              <p className="text-gray-700 text-lg leading-relaxed max-w-2xl mt-4 font-normal text-left">
                 {idioma === 'es' 
                   ? 'En ViOs Code, no solo desarrollamos software; construimos ecosistemas inmersivos. Fusionamos la gestión empresarial de alto nivel con tecnologías de vanguardia como web3, realidad virtual y escaneo 3D. Nuestro objetivo es llevar los negocios físicos de la Riviera Maya y del mundo hacia la siguiente dimensión del comercio digital.'
                   : 'At ViOs Code, we don\'t just develop software; we build immersive ecosystems. We merge high-level business management with cutting-edge technologies like web3, virtual reality, and 3D scanning. Our goal is to take physical businesses from the Riviera Maya and the world into the next dimension of digital commerce.'}
