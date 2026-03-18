@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* 👇 AQUÍ CONFIGURAMOS TUS NUEVAS FUENTES PARA TAILWIND v4 👇 */
+@theme {
+  --font-inter: var(--font-inter);
+  --font-montserrat: var(--font-montserrat);
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
