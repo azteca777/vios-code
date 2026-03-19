@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+// Importamos Link de next/link si no estaba ya importado
+import Link from 'next/link';
 
 export default function ViosCodeMatriz() {
   const [idioma, setIdioma] = useState('es');
@@ -118,7 +120,7 @@ export default function ViosCodeMatriz() {
         </div>
       </section>
 
-      {/* 🌌 SECCIÓN 3: LA ARQUITECTURA (Mismo diseño claro premium) */}
+      {/* 🌌 SECCIÓN 3: LA ARQUITECTURA (Ahora con 6 elementos) */}
       <section className="px-6 max-w-6xl mx-auto">
         {/* Título dinámico para contraste */}
         <div className="text-center mb-16">
@@ -130,8 +132,26 @@ export default function ViosCodeMatriz() {
           </p>
         </div>
 
-        {/* Tarjetas de arquitectura */}
+        {/* Tarjetas de arquitectura en Grid (ahora formarán 2 filas perfectas de 3) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          {/* 1. ViOs Metaverso (NUEVA - Al principio) */}
+          {/* 👇 CAMBIO AQUÍ: Envolvemos la tarjeta en un Link 👇 */}
+          <Link 
+            href="https://www.viosmetaverse.com/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm block cursor-pointer"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
+            <div className="text-5xl mb-6">🌐</div>
+            <h3 className="font-montserrat text-2xl font-bold text-black mb-2">ViOs Metaverso</h3>
+            <p className="text-gray-600 text-sm">
+              {idioma === 'es' ? 'El portal principal. La interfaz de conexión interactiva que unifica nuestra tecnología, negocios y usuarios.' : 'The main portal. The interactive connection interface that unifies our technology, businesses, and users.'}
+            </p>
+          </Link>
+
+          {/* 2. Virtual Universe */}
           <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
             <div className="text-5xl mb-6">🌌</div>
@@ -141,6 +161,7 @@ export default function ViosCodeMatriz() {
             </p>
           </div>
 
+          {/* 3. Virtual Planet */}
           <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
             <div className="text-5xl mb-6">🪐</div>
@@ -150,6 +171,7 @@ export default function ViosCodeMatriz() {
             </p>
           </div>
 
+          {/* 4. Virtual Metra */}
           <div className="bg-white border border-[#d4af37]/30 p-8 rounded-3xl hover:border-[#d4af37] transition-all relative overflow-hidden group shadow-[0_0_30px_rgba(212,175,55,0.1)]">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#d4af37]/10 rounded-full blur-3xl group-hover:bg-[#d4af37]/20 transition-all"></div>
             <div className="text-5xl mb-6">🏙️</div>
@@ -157,8 +179,6 @@ export default function ViosCodeMatriz() {
             <p className="text-gray-700 text-sm">
               {idioma === 'es' ? 'Proyectos locales y específicos. El hogar de desarrollos inmersivos como Tianguis Tulum.' : 'Local and specific projects. The home of immersive developments like Tianguis Tulum.'}
             </p>
-            {/* 👇 BOTÓN CONECTADO A TIANGUIS TULUM 👇 */}
-            {/* Reemplaza el # con el link real de tu página de Tianguis Tulum cuando la tengas */}
             <a 
               href="https://www.tianguistulum.com" 
               target="_blank" 
@@ -168,6 +188,27 @@ export default function ViosCodeMatriz() {
               {idioma === 'es' ? 'Explorar Tianguis Tulum ➔' : 'Explore Tianguis Tulum ➔'}
             </a>
           </div>
+
+          {/* 5. Virtual Social (NUEVA - Después de Metra) */}
+          <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
+            <div className="text-5xl mb-6">🤝</div>
+            <h3 className="font-montserrat text-2xl font-bold text-black mb-2">Virtual Social</h3>
+            <p className="text-gray-600 text-sm">
+              {idioma === 'es' ? 'El núcleo de la comunidad. Plataformas interactivas diseñadas para conectar usuarios, avatares y marcas en tiempo real.' : 'The community core. Interactive platforms designed to connect users, avatars, and brands in real-time.'}
+            </p>
+          </div>
+
+          {/* 6. Virtual Nomad (NUEVA - Al final) */}
+          <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
+            <div className="text-5xl mb-6">🌍</div>
+            <h3 className="font-montserrat text-2xl font-bold text-black mb-2">Virtual Nomad</h3>
+            <p className="text-gray-600 text-sm">
+              {idioma === 'es' ? 'El puente físico-digital. Soluciones para ciudadanos del mundo que trabajan, viajan y viven sin fronteras.' : 'The physical-digital bridge. Solutions for global citizens who work, travel, and live without borders.'}
+            </p>
+          </div>
+
         </div>
       </section>
 
