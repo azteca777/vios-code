@@ -1,14 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-// Importamos Link de next/link si no estaba ya importado
 import Link from 'next/link';
 
 export default function ViosCodeMatriz() {
   const [idioma, setIdioma] = useState('es');
-  
-  // 🔥 El interruptor maestro de la intro
-  const [introTerminada, setIntroTerminada] = useState(false);
 
   const BotonIdioma = () => (
     <button 
@@ -21,57 +17,43 @@ export default function ViosCodeMatriz() {
   );
 
   return (
-    // 🔥 CAMBIO MAESTRO: El fondo cambia automáticamente según el estado de la intro
-    <div className={`min-h-screen ${!introTerminada ? 'bg-black' : 'bg-white'} font-inter selection:bg-[#e91e63] selection:text-white pb-20 antialiased transition-colors duration-1000`}>
+    <div className="min-h-screen bg-white font-inter selection:bg-[#e91e63] selection:text-white pb-20 antialiased">
       
-      {/* 🌌 BARRA DE NAVEGACIÓN SUPERIOR (También cambia de color) */}
-      <nav className={`fixed top-0 w-full ${!introTerminada ? 'bg-black/90 border-gray-800' : 'bg-white/95 border-gray-200'} backdrop-blur-md border-b z-50 px-6 py-4 flex justify-between items-center shadow-sm transition-all duration-1000`}>
+      {/* 🌌 BARRA DE NAVEGACIÓN SUPERIOR */}
+      <nav className="fixed top-0 w-full bg-white/95 border-gray-200 backdrop-blur-md border-b z-50 px-6 py-4 flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-3 relative z-10">
-          
-          {/* 👇 LOGOTIPO OFICIAL INTEGRADO 👇 */}
-          {/* Usamos invert() en modo cine para que el texto negro se vuelva blanco y resalte sobre el fondo negro */}
           <img 
             src="/logo_vios.jpeg" 
             alt="ViOs Code Logo" 
-            className={`h-12 w-auto object-contain transition-all duration-1000 ${!introTerminada ? 'invert brightness-0' : ''}`}
+            className="h-12 w-auto object-contain"
           />
-          
         </div>
         <BotonIdioma />
       </nav>
 
-      {/* 👤 SECCIÓN 1: INTRO / BIOGRAFÍA (Ocupa mucho espacio para el efecto cine) */}
-      <section className="pt-36 px-6 max-w-7xl mx-auto flex flex-col items-center justify-center min-h-[40vh] md:min-h-[50vh] mb-24 relative">
+      {/* 👤 SECCIÓN 1: LOGOS Y BIOGRAFÍA */}
+      <section className="pt-36 px-6 max-w-7xl mx-auto flex flex-col items-center justify-center mb-24 relative">
         
-        {!introTerminada ? (
+        {/* 🏆 SECCIÓN: MARCAS / LOGOTIPOS */}
+        <div className="w-full mb-16 flex flex-col items-center animate-[fadeIn_1s_ease-in-out]">
+          <h4 className="text-gray-400 uppercase tracking-widest text-xs md:text-sm font-bold mb-6 text-center">
+            {idioma === 'es' ? 'Marcas que impulsan el ecosistema' : 'Brands powering the ecosystem'}
+          </h4>
           
-          /* 🎬 EL REPRODUCTOR INTRO ("Cinematic Mode" activado) */
-          <div className="w-full max-w-5xl relative rounded-3xl overflow-hidden shadow-[0_0_100px_rgba(212,175,55,0.3)] border border-gray-800 bg-black animate-[fadeIn_1s_ease-in-out]">
-            <video 
-              src="/video_intro.mp4" 
-              autoPlay 
-              muted // <-- Mute para Autoplay automático
-              playsInline
-              onEnded={() => setIntroTerminada(true)} 
-              // pointer-events-none evita que el usuario le dé clic derecho o lo pause por error
-              className="w-full h-auto pointer-events-none" 
-            />
-            {/* Botón sutil adaptado para fondo oscuro */}
-            <button 
-              onClick={() => setIntroTerminada(true)}
-              className="absolute bottom-6 right-6 text-xs text-white/70 hover:text-white font-semibold px-4 py-2 border border-white/20 hover:border-white rounded-full transition-all bg-black/50 backdrop-blur-sm z-10"
-            >
-              Saltar Intro ➔
-            </button>
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 transition-all duration-500">
+             <img src="/logo_conquesito.jpeg" alt="Con Quesito" className="h-12 md:h-24 w-auto object-contain" />
+             <img src="/mulata.jpeg" alt="Mulata" className="h-12 md:h-24 w-auto object-contain" />
+             <img src="/salsas_ketzzal.jpeg" alt="Salsas Ketzzal" className="h-12 md:h-24 w-auto object-contain" />
           </div>
+        </div>
 
-        ) : (
-
-          /* 📸 LA FOTO Y BIOGRAFÍA (Ahora alineada a la izquierda en celulares) */
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-12 w-full animate-[fadeIn_1s_ease-in-out]">
+        {/* 📸 LA FOTO Y BIOGRAFÍA */}
+        <div className="flex flex-col w-full animate-[fadeIn_1s_ease-in-out]">
+          
+          {/* 👇 CAMBIO AQUÍ: Cambié md:gap-12 por md:gap-20 y lg:gap-32 para separarlos más en laptops 👇 */}
+          <div className="flex flex-row items-center md:items-start gap-4 md:gap-20 lg:gap-32 w-full">
             
-            {/* Contenedor de la foto centrado en móviles, pero manteniendo el texto a la izquierda */}
-            <div className="w-24 md:w-50 shrink-0 relative mx-auto md:mx-0">
+            <div className="w-1/3 md:w-64 shrink-0 relative">
               <img 
                 src="/tu_foto.jpeg" 
                 alt="Emmanuel Osorio" 
@@ -79,35 +61,57 @@ export default function ViosCodeMatriz() {
               />
             </div>
             
-            {/* CAMBIO AQUÍ: Se reemplazó "text-center" por "text-left" en este div contenedor */}
-            <div className="flex flex-col gap-4 text-left md:ml-25 text-black w-full">
-              <h2 className="font-montserrat text-4xl md:text-6xl font-black tracking-tight">
-                {idioma === 'es' ? 'Redefiniendo la' : 'Redefining the'} <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-600">
+            {/* También añadí md:flex-1 para que el texto ocupe el espacio restante de forma natural */}
+            <div className="w-2/3 md:w-auto md:flex-1 flex flex-col gap-2 md:gap-4 text-left text-black">
+              <h2 className="font-montserrat text-xl md:text-6xl font-black tracking-tight leading-tight">
+                {idioma === 'es' ? 'Redefiniendo la' : 'Redefining the'} <br className="hidden md:block" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-600 block md:inline">
                   {idioma === 'es' ? 'Realidad Digital.' : 'Digital Reality.'}
                 </span>
               </h2>
-              <h3 className="font-montserrat text-xl tracking-widest font-bold uppercase">Emmanuel Osorio — CEO & Founder</h3>
-              {/* Párrafo justificado a la izquierda */}
-              <p className="text-gray-700 text-lg leading-relaxed max-w-2xl mt-4 font-normal text-left">
+              
+              <div className="flex flex-col mt-1 md:mt-0">
+                <h3 className="font-montserrat text-[10px] md:text-xl tracking-widest font-bold uppercase text-gray-800">
+                  Emmanuel Osorio — CEO & Founder
+                </h3>
+                <h2 className="font-montserrat text-[9px] md:text-sm tracking-widest font-semibold uppercase text-gray-500 mt-1">
+                  Quintana Roo
+                </h2>
+              </div>
+              
+              <p className="text-gray-700 text-xs md:text-lg leading-relaxed md:leading-relaxed max-w-2xl mt-1 md:mt-4 font-normal text-left">
                 {idioma === 'es' 
-                  ? 'En ViOs Code, no solo desarrollamos software; construimos ecosistemas inmersivos. Fusionamos la gestión empresarial de alto nivel con tecnologías de vanguardia como web3, realidad virtual y escaneo 3D. Nuestro objetivo es llevar los negocios físicos de la Riviera Maya y del mundo hacia la siguiente dimensión del comercio digital.'
-                  : 'At ViOs Code, we don\'t just develop software; we build immersive ecosystems. We merge high-level business management with cutting-edge technologies like web3, virtual reality, and 3D scanning. Our goal is to take physical businesses from the Riviera Maya and the world into the next dimension of digital commerce.'}
+                  ? 'En ViOs Code, no solo desarrollamos software; construimos ecosistemas inmersivos. Fusionamos la gestión empresarial de alto nivel con tecnologías de vanguardia como web3, realidad virtual y escaneo 3D.'
+                  : 'At ViOs Code, we don\'t just develop software; we build immersive ecosystems. We merge high-level business management with cutting-edge technologies like web3, virtual reality, and 3D scanning.'}
+                
+                <span className="hidden md:inline">
+                  {' '}
+                  {idioma === 'es'
+                    ? 'Nuestro objetivo es llevar los negocios físicos de la Riviera Maya y del mundo hacia la siguiente dimensión del comercio digital.'
+                    : 'Our goal is to take physical businesses from the Riviera Maya and the world into the next dimension of digital commerce.'}
+                </span>
               </p>
             </div>
-            
           </div>
-        )}
+
+          <div className="md:hidden w-full flex justify-center mt-6">
+            <p className="text-gray-700 text-xs leading-relaxed font-normal text-left w-full px-1">
+              {idioma === 'es'
+                ? 'Nuestro objetivo es llevar los negocios físicos de la Riviera Maya y del mundo hacia la siguiente dimensión del comercio digital.'
+                : 'Our goal is to take physical businesses from the Riviera Maya and the world into the next dimension of digital commerce.'}
+            </p>
+          </div>
+
+        </div>
       </section>
 
-      {/* 📊 SECCIÓN 2: PITCH COMERCIAL (GAMMA) - GIGANTE (Mismo diseño claro premium) */}
+      {/* 📊 SECCIÓN 2: PITCH COMERCIAL (GAMMA) */}
       <section className="px-4 md:px-8 w-full max-w-[95%] 2xl:max-w-[90%] mx-auto mb-32 flex flex-col items-center">
         <div className="w-full flex items-center justify-between mb-8">
-          {/* Título también dinámico para contrastar en el fondo cambiante */}
-          <h2 className={`font-montserrat text-2xl md:text-4xl font-bold tracking-wide ${!introTerminada ? 'text-white' : 'text-black'} transition-colors duration-1000`}>
+          <h2 className="font-montserrat text-2xl md:text-4xl font-bold tracking-wide text-black">
             {idioma === 'es' ? 'Nuestra Propuesta' : 'Our Pitch'}
           </h2>
-          <div className={`h-px ${!introTerminada ? 'bg-gradient-to-r from-gray-800 to-transparent' : 'bg-gradient-to-r from-gray-300 to-transparent'} flex-grow ml-8 transition-colors duration-1000`}></div>
+          <div className="h-px bg-gradient-to-r from-gray-300 to-transparent flex-grow ml-8"></div>
         </div>
         
         <div className="w-full bg-white p-2 md:p-3 rounded-3xl border border-gray-200 shadow-[0_0_40px_rgba(212,175,55,0.1)] relative group transition-all duration-300 hover:shadow-[0_0_60px_rgba(212,175,55,0.2)]">
@@ -120,23 +124,20 @@ export default function ViosCodeMatriz() {
         </div>
       </section>
 
-      {/* 🌌 SECCIÓN 3: LA ARQUITECTURA (Ahora con 6 elementos) */}
+      {/* 🌌 SECCIÓN 3: LA ARQUITECTURA */}
       <section className="px-6 max-w-6xl mx-auto">
-        {/* Título dinámico para contraste */}
         <div className="text-center mb-16">
-          <h2 className={`font-montserrat text-3xl md:text-5xl font-black mb-4 ${!introTerminada ? 'text-white' : 'text-black'} transition-colors duration-1000`}>
+          <h2 className="font-montserrat text-3xl md:text-5xl font-black mb-4 text-black">
             {idioma === 'es' ? 'La Arquitectura del Multiverso' : 'The Multiverse Architecture'}
           </h2>
-          <p className={`${!introTerminada ? 'text-gray-400' : 'text-gray-600'} text-lg max-w-2xl mx-auto transition-colors duration-1000`}>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             {idioma === 'es' ? 'ViOs Code es el núcleo de un sistema escalable diseñado para conquistar el mercado digital paso a paso.' : 'ViOs Code is the core of a scalable system designed to conquer the digital market step by step.'}
           </p>
         </div>
 
-        {/* Tarjetas de arquitectura en Grid (ahora formarán 2 filas perfectas de 3) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
-          {/* 1. ViOs Metaverso (NUEVA - Al principio) */}
-          {/* 👇 CAMBIO AQUÍ: Envolvemos la tarjeta en un Link 👇 */}
+          {/* 1. ViOs Metaverso */}
           <Link 
             href="https://www.viosmetaverse.com/" 
             target="_blank" 
@@ -189,7 +190,7 @@ export default function ViosCodeMatriz() {
             </a>
           </div>
 
-          {/* 5. Virtual Social (NUEVA - Después de Metra) */}
+          {/* 5. Virtual Social */}
           <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
             <div className="text-5xl mb-6">🤝</div>
@@ -199,7 +200,7 @@ export default function ViosCodeMatriz() {
             </p>
           </div>
 
-          {/* 6. Virtual Nomad (NUEVA - Al final) */}
+          {/* 6. Virtual Nomad */}
           <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
             <div className="text-5xl mb-6">🌍</div>
@@ -212,7 +213,6 @@ export default function ViosCodeMatriz() {
         </div>
       </section>
 
-      {/* Pequeño CSS para la animación suave al cambiar de video a texto */}
       <style jsx global>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
