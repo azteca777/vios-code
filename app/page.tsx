@@ -40,17 +40,20 @@ export default function ViosCodeMatriz() {
             {idioma === 'es' ? 'Marcas que impulsan el ecosistema' : 'Brands powering the ecosystem'}
           </h4>
           
+          {/* 👇 CONTENEDOR DE LOGOS: Ahora con Magnolia incluido 👇 */}
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 transition-all duration-500">
              <img src="/logo_conquesito.jpeg" alt="Con Quesito" className="h-12 md:h-24 w-auto object-contain" />
-             <img src="/mulata.jpeg" alt="Mulata" className="h-12 md:h-24 w-auto object-contain" />
+             <img src="/mulata_bw.jpeg" alt="Mulata" className="h-12 md:h-24 w-auto object-contain" />
              <img src="/salsas_ketzzal.jpeg" alt="Salsas Ketzzal" className="h-12 md:h-24 w-auto object-contain" />
+             {/* 👇 NUEVO LOGO AGREGADO AQUÍ 👇 */}
+             <img src="/magnolia.jpeg" alt="Magnolia" className="h-12 md:h-24 w-auto object-contain" />
           </div>
         </div>
 
         {/* 📸 LA FOTO Y BIOGRAFÍA */}
         <div className="flex flex-col w-full animate-[fadeIn_1s_ease-in-out]">
           
-          {/* 👇 CAMBIO AQUÍ: Cambié md:gap-12 por md:gap-20 y lg:gap-32 para separarlos más en laptops 👇 */}
+          {/* Contenedor principal con separación generosa para laptops (md:gap-20, lg:gap-32) */}
           <div className="flex flex-row items-center md:items-start gap-4 md:gap-20 lg:gap-32 w-full">
             
             <div className="w-1/3 md:w-64 shrink-0 relative">
@@ -61,7 +64,6 @@ export default function ViosCodeMatriz() {
               />
             </div>
             
-            {/* También añadí md:flex-1 para que el texto ocupe el espacio restante de forma natural */}
             <div className="w-2/3 md:w-auto md:flex-1 flex flex-col gap-2 md:gap-4 text-left text-black">
               <h2 className="font-montserrat text-xl md:text-6xl font-black tracking-tight leading-tight">
                 {idioma === 'es' ? 'Redefiniendo la' : 'Redefining the'} <br className="hidden md:block" />
@@ -84,6 +86,7 @@ export default function ViosCodeMatriz() {
                   ? 'En ViOs Code, no solo desarrollamos software; construimos ecosistemas inmersivos. Fusionamos la gestión empresarial de alto nivel con tecnologías de vanguardia como web3, realidad virtual y escaneo 3D.'
                   : 'At ViOs Code, we don\'t just develop software; we build immersive ecosystems. We merge high-level business management with cutting-edge technologies like web3, virtual reality, and 3D scanning.'}
                 
+                {/* Oculto en móviles, se muestra en md+ para completar el párrafo */}
                 <span className="hidden md:inline">
                   {' '}
                   {idioma === 'es'
@@ -94,6 +97,7 @@ export default function ViosCodeMatriz() {
             </div>
           </div>
 
+          {/* Segunda parte del párrafo, visible SÓLO en móviles (md:hidden) */}
           <div className="md:hidden w-full flex justify-center mt-6">
             <p className="text-gray-700 text-xs leading-relaxed font-normal text-left w-full px-1">
               {idioma === 'es'
