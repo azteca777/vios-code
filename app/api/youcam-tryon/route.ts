@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 
-// 🛡️ LISTA VIP DE PRODUCCIÓN EN VERCEL
 const DOMINIOS_PERMITIDOS = [
   'https://virtualuxurytulum.com',
   'https://www.virtualuxurytulum.com',
@@ -37,10 +36,11 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { userPhotoBase64, referenceImageUrl, tipoPrenda = 'cloth' } = body;
+    // 👇 ESTO ES LO QUE LE FALTA A TU SERVIDOR VIRTUAL
+    const { src_file_url, ref_file_url, tipoPrenda = 'cloth' } = body;
 
-    if (!userPhotoBase64 || !referenceImageUrl) {
-      let errorRes = NextResponse.json({ error: 'Faltan datos de imagen' }, { status: 400 });
+    if (!src_file_url || !ref_file_url) {
+      let errorRes = NextResponse.json({ error: 'Faltan URLs de imagen en la Matrix' }, { status: 400 });
       return agregarCors(errorRes, origin);
     }
 
@@ -50,22 +50,14 @@ export async function POST(request: Request) {
       return agregarCors(errorRes, origin);
     }
 
-    // 🔗 LA URL OFICIAL DE YOUCAM V2 (¡Adiós al edificio fantasma!)
     const YOUCAM_ENDPOINT = `https://yce-api-01.makeupar.com/s2s/v2.0/task/${tipoPrenda}`;
 
-    // 🧹 Limpiamos el texto de tu foto Base64 para que YouCam la acepte
-    const base64Limpio = userPhotoBase64.includes(',') 
-      ? userPhotoBase64.split(',')[1] 
-      : userPhotoBase64;
-
-    // 📦 EMPAQUETAMOS LOS DATOS EN JSON (Formato V2)
     const payload = {
-      src_file_base64: base64Limpio,    // Tu foto subida
-      ref_file_url: referenceImageUrl,  // La foto de tu traje de baño
-      garment_category: "auto"          // Que la IA decida cómo ajustarlo
+      src_file_url: src_file_url,
+      ref_file_url: ref_file_url,
+      garment_category: "auto"
     };
 
-    // 🛡️ LLAMADA A YOUCAM CON EL BEARER TOKEN CORRECTO
     const youcamResponse = await fetch(YOUCAM_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -76,8 +68,6 @@ export async function POST(request: Request) {
     });
 
     const data = await youcamResponse.json();
-    
-    // 🚨 RADAR DE DEBUGGING PARA VERCEL
     console.log("🤖 RESPUESTA DE YOUCAM:", JSON.stringify(data, null, 2));
 
     if (!youcamResponse.ok) {
