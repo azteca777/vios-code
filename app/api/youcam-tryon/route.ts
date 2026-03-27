@@ -14,8 +14,9 @@ const DOMINIOS_PERMITIDOS = [
 function agregarCors(res: NextResponse, origin: string | null) {
   if (origin && DOMINIOS_PERMITIDOS.includes(origin)) {
     res.headers.set('Access-Control-Allow-Origin', origin);
-    res.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    // 👇 AQUÍ ESTÁ LA MAGIA QUE EVITA EL BLOQUEO EN VERCEL 👇
+    res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); 
+    res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept'); 
   }
   return res;
 }
