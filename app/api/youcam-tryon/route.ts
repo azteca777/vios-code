@@ -101,7 +101,7 @@ export async function GET(request: Request) {
 
   const apiKey = process.env.YOUCAM_API_KEY_SECRET;
   // Endpoint de YouCam para consultar el status de una tarea
-  const YOUCAM_ENDPOINT = `https://yce-api-01.makeupar.com/s2s/v2.0/task/${taskId}`;
+  const YOUCAM_ENDPOINT = `https://yce-api-01.makeupar.com/s2s/v2.0/task/cloth/${taskId}`;
 
   try {
     const youcamResponse = await fetch(YOUCAM_ENDPOINT, {
