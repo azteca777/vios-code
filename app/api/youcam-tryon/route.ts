@@ -49,6 +49,7 @@ export async function POST(request: Request) {
       return agregarCors(errorRes, origin);
     }
 
+    // 🚀 ENDPOINT DINÁMICO PARA EL POST (cloth o hat)
     const YOUCAM_ENDPOINT = `https://yce-api-01.makeupar.com/s2s/v2.0/task/${tipoPrenda}`;
 
     const payload = {
@@ -84,7 +85,7 @@ export async function POST(request: Request) {
   }
 }
 
-// 👇 LA NUEVA FUNCIÓN PARA CONSULTAR EL TICKET (POLLING) 👇
+// 👇 LA FUNCIÓN GET (POLLING) AHORA ES MULTI-PRENDA 👇
 export async function GET(request: Request) {
   const origin = request.headers.get('origin');
   if (origin && !DOMINIOS_PERMITIDOS.includes(origin)) {
@@ -93,6 +94,9 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const taskId = searchParams.get('taskId');
+  
+  // 🎩 MAGIA AQUÍ: Recibimos el tipo de prenda, si no mandan nada, asume que es ropa (cloth) para no romper Magnolia.
+  const tipoPrenda = searchParams.get('tipoPrenda') || 'cloth'; 
 
   if (!taskId) {
     let errorRes = NextResponse.json({ error: 'Falta el ticket (taskId)' }, { status: 400 });
@@ -100,8 +104,9 @@ export async function GET(request: Request) {
   }
 
   const apiKey = process.env.YOUCAM_API_KEY_SECRET;
-  // Endpoint de YouCam para consultar el status de una tarea
-  const YOUCAM_ENDPOINT = `https://yce-api-01.makeupar.com/s2s/v2.0/task/cloth/${taskId}`;
+  
+  // 🚀 ENDPOINT DINÁMICO PARA EL GET
+  const YOUCAM_ENDPOINT = `https://yce-api-01.makeupar.com/s2s/v2.0/task/${tipoPrenda}/${taskId}`;
 
   try {
     const youcamResponse = await fetch(YOUCAM_ENDPOINT, {
