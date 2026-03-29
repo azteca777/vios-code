@@ -6,7 +6,9 @@ const DOMINIOS_PERMITIDOS = [
   'https://vioscode.io',
   'https://www.vioscode.io',
   'https://virtualuniverse.com',
-  'http://localhost:3000', 
+  'https://tianguistulum.com',      // 👈 AGREGA ESTA
+  'https://www.tianguistulum.com',  // 👈 Y ESTA
+  'http://localhost:3000',
   'http://localhost:3001'
 ];
 
