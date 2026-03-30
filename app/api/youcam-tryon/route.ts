@@ -38,7 +38,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { src_file_url, ref_file_url, tipoPrenda = 'cloth' } = body;
+    const { src_file_url, ref_file_url, tipoPrenda = 'cloth', gender } = body;
 
     if (!src_file_url || !ref_file_url) {
       let errorRes = NextResponse.json({ error: 'Faltan URLs de imagen en la Matrix' }, { status: 400 });
@@ -54,12 +54,23 @@ export async function POST(request: Request) {
     // 🚀 ENDPOINT DINÁMICO PARA EL POST (cloth o hat)
     const YOUCAM_ENDPOINT = `https://yce-api-01.makeupar.com/s2s/v2.0/task/${tipoPrenda}`;
 
-    const payload = {
-      src_file_url: src_file_url,
-      ref_file_url: ref_file_url,
-      garment_category: "auto",
-      gender: "female" // 👈 ¡EL PASE VIP PARA YOUCAM!
-    };
+    // Armamos el paquete base estrictamente como pide la documentación
+const payload: any = {
+  src_file_url: src_file_url,
+  ref_file_url: ref_file_url
+};
+
+// Separación perfecta: Sombreros vs Ropa
+if (tipoPrenda === 'hat') {
+  // Si el Tianguis manda el género lo usa, si no, asume 'male' por seguridad
+  payload.gender = gender || "male"; 
+  payload.style = "style_urban_fashion"; // Estilo neutral que pide la API
+} else {
+  // Si es ropa (Magnolia), le mandamos la categoría
+  payload.garment_category = "auto";
+}
+
+console.log("📦 ENVIANDO A YOUCAM:", JSON.stringify(payload));
 
     const youcamResponse = await fetch(YOUCAM_ENDPOINT, {
       method: 'POST',
