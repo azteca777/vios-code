@@ -57,7 +57,8 @@ export async function POST(request: Request) {
     const payload = {
       src_file_url: src_file_url,
       ref_file_url: ref_file_url,
-      garment_category: "auto"
+      garment_category: "auto",
+      gender: "female" // 👈 ¡EL PASE VIP PARA YOUCAM!
     };
 
     const youcamResponse = await fetch(YOUCAM_ENDPOINT, {
