@@ -16,6 +16,8 @@ export default function ViosCodeMatriz() {
     </button>
   );
 
+  const URL_VIRTUAL_PLANET = "https://www.viosvirtualplanet.com/";
+
   return (
     <div className="min-h-screen bg-white font-inter selection:bg-[#e91e63] selection:text-white pb-20 antialiased">
       
@@ -40,22 +42,31 @@ export default function ViosCodeMatriz() {
             {idioma === 'es' ? 'Marcas que impulsan el ecosistema' : 'Brands powering the ecosystem'}
           </h4>
           
-          {/* 👇 CONTENEDOR DE LOGOS: Ahora con Magnolia incluido 👇 */}
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 transition-all duration-500">
-             <img src="/logo_conquesito.jpeg" alt="Con Quesito" className="h-12 md:h-24 w-auto object-contain" />
-             <img src="/mulata_bw.jpeg" alt="Mulata" className="h-12 md:h-24 w-auto object-contain" />
-             <img src="/salsas_ketzzal.jpeg" alt="Salsas Ketzzal" className="h-12 md:h-24 w-auto object-contain" />
-             {/* 👇 NUEVO LOGO AGREGADO AQUÍ 👇 */}
-             <img src="/magnolia.jpeg" alt="Magnolia" className="h-12 md:h-24 w-auto object-contain" />
+             <a href={URL_VIRTUAL_PLANET} target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-105">
+                <img src="/logo_conquesito.jpeg" alt="Con Quesito" className="h-12 md:h-24 w-auto object-contain" />
+             </a>
+             <a href={URL_VIRTUAL_PLANET} target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-105">
+                <img src="/mulata_bw.jpeg" alt="Mulata" className="h-12 md:h-24 w-auto object-contain" />
+             </a>
+             <a href={URL_VIRTUAL_PLANET} target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-105">
+                <img src="/salsas_ketzzal.jpeg" alt="Salsas Ketzzal" className="h-12 md:h-24 w-auto object-contain" />
+             </a>
+             <a href={URL_VIRTUAL_PLANET} target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-105">
+                <img src="/magnolia.jpeg" alt="Magnolia" className="h-12 md:h-24 w-auto object-contain" />
+             </a>
+             <a href={URL_VIRTUAL_PLANET} target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-105">
+                <img src="/bernardita.jpeg" alt="Bernardita" className="h-12 md:h-24 w-auto object-contain" />
+             </a>
+             <a href={URL_VIRTUAL_PLANET} target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-105">
+                <img src="/templo_de_pieles.jpeg" alt="Templo de Pieles" className="h-12 md:h-24 w-auto object-contain" />
+             </a>
           </div>
         </div>
 
-        {/* 📸 LA FOTO Y BIOGRAFÍA */}
-        <div className="flex flex-col w-full animate-[fadeIn_1s_ease-in-out]">
-          
-          {/* Contenedor principal con separación generosa para laptops (md:gap-20, lg:gap-32) */}
+        {/* 📸 BIOGRAFÍA EMMANUEL */}
+        <div className="flex flex-col w-full animate-[fadeIn_1s_ease-in-out] mb-20">
           <div className="flex flex-row items-center md:items-start gap-4 md:gap-20 lg:gap-32 w-full">
-            
             <div className="w-1/3 md:w-64 shrink-0 relative">
               <img 
                 src="/tu_foto.jpeg" 
@@ -85,8 +96,6 @@ export default function ViosCodeMatriz() {
                 {idioma === 'es' 
                   ? 'En ViOs Code, no solo desarrollamos software; construimos ecosistemas inmersivos. Fusionamos la gestión empresarial de alto nivel con tecnologías de vanguardia como web3, realidad virtual y escaneo 3D.'
                   : 'At ViOs Code, we don\'t just develop software; we build immersive ecosystems. We merge high-level business management with cutting-edge technologies like web3, virtual reality, and 3D scanning.'}
-                
-                {/* Oculto en móviles, se muestra en md+ para completar el párrafo */}
                 <span className="hidden md:inline">
                   {' '}
                   {idioma === 'es'
@@ -96,8 +105,6 @@ export default function ViosCodeMatriz() {
               </p>
             </div>
           </div>
-
-          {/* Segunda parte del párrafo, visible SÓLO en móviles (md:hidden) */}
           <div className="md:hidden w-full flex justify-center mt-6">
             <p className="text-gray-700 text-xs leading-relaxed font-normal text-left w-full px-1">
               {idioma === 'es'
@@ -105,25 +112,55 @@ export default function ViosCodeMatriz() {
                 : 'Our goal is to take physical businesses from the Riviera Maya and the world into the next dimension of digital commerce.'}
             </p>
           </div>
-
         </div>
+
+        {/* 🎨 SECCIÓN: DIRECTOR DE DISEÑO (RAFAEL) */}
+        <div className="w-full border-t border-gray-100 pt-16 animate-[fadeIn_1.2s_ease-in-out]">
+          <div className="flex flex-row items-center md:items-start gap-6 md:gap-16 w-full">
+            <div className="w-24 md:w-44 shrink-0 relative">
+              <img 
+                src="/dir_grafic_rafa.jpeg" 
+                alt="Rafael Villanueva Cortes" 
+                className="w-full h-auto rounded-xl shadow-lg border border-gray-200 grayscale hover:grayscale-0 transition-all duration-700" 
+              />
+            </div>
+            
+            <div className="flex-1 flex flex-col gap-1 md:gap-3 text-left text-black">
+              <div className="flex flex-col">
+                <h3 className="font-montserrat text-sm md:text-3xl font-bold text-gray-800">
+                  Rafael Villanueva Cortes
+                </h3>
+                <h4 className="font-montserrat text-[9px] md:text-sm tracking-[0.2em] font-bold uppercase text-[#d4af37] mt-1">
+                  {idioma === 'es' ? 'Director de Diseño Gráfico' : 'Graphic Design Director'}
+                </h4>
+              </div>
+              
+              <p className="text-gray-600 text-[10px] md:text-base leading-relaxed max-w-xl font-light italic">
+                {idioma === 'es'
+                  ? 'Arquitecto visual del ecosistema. Lidera la creación de identidades de alto impacto, asegurando que la estética de cada proyecto en el multiverso sea impecable y vanguardista.'
+                  : 'Visual architect of the ecosystem. Leads high-impact identity creation, ensuring that the aesthetics of every project in the multiverse are flawless and cutting-edge.'}
+              </p>
+            </div>
+          </div>
+        </div>
+
       </section>
 
-      {/* 📊 SECCIÓN 2: PITCH COMERCIAL (GAMMA) */}
+      {/* 📊 SECCIÓN 2: PITCH COMERCIAL (NUEVO MODELO GAMMA) */}
       <section className="px-4 md:px-8 w-full max-w-[95%] 2xl:max-w-[90%] mx-auto mb-32 flex flex-col items-center">
         <div className="w-full flex items-center justify-between mb-8">
           <h2 className="font-montserrat text-2xl md:text-4xl font-bold tracking-wide text-black">
-            {idioma === 'es' ? 'Nuestra Propuesta' : 'Our Pitch'}
+            {idioma === 'es' ? 'Nuestro Modelo de Negocio' : 'Our Business Model'}
           </h2>
           <div className="h-px bg-gradient-to-r from-gray-300 to-transparent flex-grow ml-8"></div>
         </div>
         
         <div className="w-full bg-white p-2 md:p-3 rounded-3xl border border-gray-200 shadow-[0_0_40px_rgba(212,175,55,0.1)] relative group transition-all duration-300 hover:shadow-[0_0_60px_rgba(212,175,55,0.2)]">
           <iframe 
-            src={idioma === 'es' ? "https://gamma.app/embed/nnm8h0tsflagjhn" : "https://gamma.app/embed/rt9rhkzyfj7yyqk"} 
+            src={idioma === 'es' ? "https://gamma.app/embed/qckwr0gsgl9a8gv" : "https://gamma.app/embed/1smkc5wzbe09g48"} 
             className="w-full h-[550px] md:h-[800px] lg:h-[850px] rounded-2xl relative z-10 bg-white transition-all duration-500 border border-gray-100" 
             allowFullScreen 
-            title={idioma === 'es' ? "Tu Negocio en la Nueva Dimensión" : "Your Business in the New Dimension"}
+            title={idioma === 'es' ? "El Futuro del Comercio: Tu Negocio en la Siguiente Dimensión" : "The Future of Commerce: Your Business in the Next Dimension"}
           ></iframe>
         </div>
       </section>
@@ -140,8 +177,6 @@ export default function ViosCodeMatriz() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          
-          {/* 1. ViOs Metaverso */}
           <Link 
             href="https://www.viosmetaverse.com/" 
             target="_blank" 
@@ -156,7 +191,6 @@ export default function ViosCodeMatriz() {
             </p>
           </Link>
 
-          {/* 2. Virtual Universe */}
           <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
             <div className="text-5xl mb-6">🌌</div>
@@ -166,7 +200,6 @@ export default function ViosCodeMatriz() {
             </p>
           </div>
 
-          {/* 3. Virtual Planet */}
           <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
             <div className="text-5xl mb-6">🪐</div>
@@ -176,7 +209,6 @@ export default function ViosCodeMatriz() {
             </p>
           </div>
 
-          {/* 4. Virtual Metra */}
           <div className="bg-white border border-[#d4af37]/30 p-8 rounded-3xl hover:border-[#d4af37] transition-all relative overflow-hidden group shadow-[0_0_30px_rgba(212,175,55,0.1)]">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#d4af37]/10 rounded-full blur-3xl group-hover:bg-[#d4af37]/20 transition-all"></div>
             <div className="text-5xl mb-6">🏙️</div>
@@ -194,7 +226,6 @@ export default function ViosCodeMatriz() {
             </a>
           </div>
 
-          {/* 5. Virtual Social */}
           <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
             <div className="text-5xl mb-6">🤝</div>
@@ -204,7 +235,6 @@ export default function ViosCodeMatriz() {
             </p>
           </div>
 
-          {/* 6. Virtual Nomad */}
           <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
             <div className="text-5xl mb-6">🌍</div>
