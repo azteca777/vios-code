@@ -23,6 +23,11 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.ico',
   },
+  verification: {
+    other: {
+      "facebook-domain-verification": "3821ytbjb2bml3tlcr9x4k3cjlmtin",
+    },
+  },
 };
 
 export default function RootLayout({
