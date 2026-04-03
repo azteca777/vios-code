@@ -87,7 +87,7 @@ export default function ViosCodeMatriz() {
                 
                 <div className="flex flex-col mt-1 md:mt-0">
                   <h3 className="font-montserrat text-[10px] md:text-xl tracking-widest font-bold uppercase text-gray-800">
-                    Emmanuel Osorio — CEO & Founder
+                    Emmanuel Alejandro Osorio Maza— CEO & Founder
                   </h3>
                   <h2 className="font-montserrat text-[9px] md:text-sm tracking-widest font-semibold uppercase text-gray-500 mt-1">
                     Quintana Roo
@@ -253,9 +253,16 @@ export default function ViosCodeMatriz() {
       {/* 🛡️ FOOTER LEGAL */}
       <footer className="w-full bg-[#f9f9f9] border-t border-gray-200 py-6 text-center mt-auto">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm font-inter">
-            © {new Date().getFullYear()} ViOs Code. {idioma === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}
-          </p>
+          <div className="flex flex-col items-center md:items-start">
+            <p className="text-gray-500 text-sm font-inter">
+              © {new Date().getFullYear()} ViOs Code. {idioma === 'es' ? 'Todos los derechos reservados.' : 'All rights reserved.'}
+            </p>
+            <p className="text-gray-400 text-xs font-inter mt-1">
+              {idioma === 'es' 
+                ? 'Representante legal: Emmanuel Alejandro Osorio Maza' 
+                : 'Legal Representative: Emmanuel Alejandro Osorio Maza'}
+            </p>
+          </div>
           <div className="flex gap-6">
             <Link 
               href="/politica-de-privacidad" 
