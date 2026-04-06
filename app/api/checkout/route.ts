@@ -9,11 +9,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-// Inicializamos el motor Global (Stripe)
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY_TEST as string, {
-  apiVersion: '2023-10-16', // Versión estable de Stripe
-});
-
 export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders });
 }
@@ -21,16 +16,21 @@ export async function OPTIONS() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    // Agregamos 'gateway' para saber qué pasarela usar. Si no manda nada, usa mercadopago por defecto.
     const { carrito, tienda, gateway = 'mercadopago' } = body; 
 
     // ==========================================
     // 🌍 RUTA 1: MOTOR GLOBAL (STRIPE)
     // ==========================================
     if (gateway === 'stripe') {
+      
+      // 👇 LO MOVIMOS AQUÍ ADENTRO: El motor solo arranca cuando hay un cobro internacional
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY_TEST as string, {
+        apiVersion: '2023-10-16', 
+      });
+
       const lineItems = carrito.map((producto: any) => ({
         price_data: {
-          currency: 'mxn', // Stripe cobra en centavos, así que multiplicamos por 100
+          currency: 'mxn', 
           product_data: {
             name: producto.nombre,
           },
@@ -39,7 +39,6 @@ export async function POST(request: Request) {
         quantity: producto.cantidad,
       }));
 
-      // Creamos la sesión de cobro en Stripe
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: lineItems,
