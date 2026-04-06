@@ -1,14 +1,13 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 import { NextResponse } from 'next/server';
 
-// 🛡️ Permisos de seguridad para que tus tiendas puedan pedir links (CORS)
+// 🛡️ Permisos de seguridad (CORS)
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*', // Permite que cualquier tienda tuya se conecte
+  'Access-Control-Allow-Origin': '*', 
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-// Esta función es para que los navegadores pregunten si es seguro conectarse
 export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders });
 }
@@ -42,6 +41,12 @@ export async function POST(request: Request) {
     const result = await preference.create({
       body: {
         items: items,
+        // 👇 ESTO ES LO QUE FALTABA: Las rutas de regreso 👇
+        back_urls: {
+          success: 'https://virtualuxurytulum.com/lukas',
+          failure: 'https://virtualuxurytulum.com/lukas',
+          pending: 'https://virtualuxurytulum.com/lukas',
+        },
         auto_return: 'approved',
       }
     });
