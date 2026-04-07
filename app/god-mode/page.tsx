@@ -160,7 +160,10 @@ export default function GodModeDashboard() {
               <p className="text-sm text-zinc-400 italic">Cargando ecosistemas conectados...</p>
             ) : (
               clientesSaaS.map((cliente) => {
-                const porcentajeUso = (cliente.espejo_usos_mes_actual / cliente.limite_espejo_mensual) * 100;
+                // 🧠 Lógica inteligente: ¿Tiene o no tiene espejo?
+                const tieneEspejo = cliente.limite_espejo_mensual > 0;
+                const porcentajeUso = tieneEspejo ? (cliente.espejo_usos_mes_actual / cliente.limite_espejo_mensual) * 100 : 0;
+                
                 let colorBarra = 'bg-cyan-400';
                 if (porcentajeUso > 75) colorBarra = 'bg-fuchsia-500';
                 if (porcentajeUso >= 100) colorBarra = 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]';
@@ -172,15 +175,22 @@ export default function GodModeDashboard() {
                         {cliente.nombre_marca}
                       </span>
                       <span className="text-[10px] font-bold text-zinc-400">
-                        {cliente.espejo_usos_mes_actual} / {cliente.limite_espejo_mensual} usos
+                        {tieneEspejo ? `${cliente.espejo_usos_mes_actual} / ${cliente.limite_espejo_mensual} usos` : 'SIN ESPEJO AR'}
                       </span>
                     </div>
-                    <div className="w-full h-2.5 bg-zinc-100 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full ${colorBarra} transition-all duration-1000 ease-out`} 
-                        style={{ width: `${Math.min(porcentajeUso, 100)}%` }}
-                      ></div>
-                    </div>
+                    {/* Renderizado Condicional de la Barra */}
+                    {tieneEspejo ? (
+                      <div className="w-full h-2.5 bg-zinc-100 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full ${colorBarra} transition-all duration-1000 ease-out`} 
+                          style={{ width: `${Math.min(porcentajeUso, 100)}%` }}
+                        ></div>
+                      </div>
+                    ) : (
+                      <div className="w-full h-2.5 bg-zinc-50 border border-zinc-100 rounded-full overflow-hidden flex items-center justify-center">
+                         <span className="text-[8px] tracking-[0.2em] text-zinc-300 font-bold">N/A</span>
+                      </div>
+                    )}
                   </div>
                 )
               })
