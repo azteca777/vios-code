@@ -196,12 +196,13 @@ export default function GodModeDashboard() {
               })
             )}
           </div>
-        </div>
 
-        {/* BOTÓN RESTAURADO */}
+          {/* BOTÓN RESTAURADO AHORA SÍ DENTRO DE LA TARJETA */}
           <button className="mt-8 w-full bg-black text-white text-xs font-bold uppercase tracking-widest py-4 rounded-xl hover:bg-zinc-800 transition-all shadow-[0_10px_20px_-10px_rgba(0,0,0,0.3)]">
             Gestionar Límites
           </button>
+          
+        </div>
 
       </div>
     </div>
