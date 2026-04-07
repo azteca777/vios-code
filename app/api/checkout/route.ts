@@ -1,8 +1,13 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
-// 🛡️ Permisos de seguridad (CORS)
+// 🛡️ Inicializar Supabase con privilegios de administrador (Service Role)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*', 
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -18,12 +23,36 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { carrito, tienda, gateway = 'mercadopago' } = body; 
 
+    // 🧮 CALCULAR TOTALES Y TU COMISIÓN (Ejemplo: 10% para ViOs Code)
+    const PORCENTAJE_COMISION = 0.10;
+    const totalVenta = carrito.reduce((acc: number, item: any) => acc + (item.precio * item.cantidad), 0);
+    const comisionCalculada = totalVenta * PORCENTAJE_COMISION;
+
+    // 💾 GUARDAR REGISTRO EN SUPABASE ANTES DE COBRAR
+    const { data: registroVenta, error: supabaseError } = await supabase
+      .from('ventas')
+      .insert([
+        {
+          tienda_id: tienda,
+          total: totalVenta,
+          metodo_pago: gateway,
+          comision_vios: comisionCalculada,
+          estado: 'intento_de_pago', 
+          productos: carrito
+        }
+      ])
+      .select()
+      .single();
+
+    if (supabaseError) {
+      console.error("Error guardando en Supabase:", supabaseError);
+      // No detenemos el pago si falla la base de datos
+    }
+
     // ==========================================
     // 🌍 RUTA 1: MOTOR GLOBAL (STRIPE)
     // ==========================================
     if (gateway === 'stripe') {
-      
-      // 👇 LO MOVIMOS AQUÍ ADENTRO: El motor solo arranca cuando hay un cobro internacional
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY_TEST as string, {
         apiVersion: '2023-10-16', 
       });
@@ -31,9 +60,7 @@ export async function POST(request: Request) {
       const lineItems = carrito.map((producto: any) => ({
         price_data: {
           currency: 'mxn', 
-          product_data: {
-            name: producto.nombre,
-          },
+          product_data: { name: producto.nombre },
           unit_amount: Math.round(Number(producto.precio) * 100), 
         },
         quantity: producto.cantidad,
@@ -43,6 +70,7 @@ export async function POST(request: Request) {
         payment_method_types: ['card'],
         line_items: lineItems,
         mode: 'payment',
+        client_reference_id: registroVenta?.id, // 👈 Se vincula el ID de Supabase
         success_url: 'https://virtualuxurytulum.com/lukas?pago=exitoso',
         cancel_url: 'https://virtualuxurytulum.com/lukas?pago=cancelado',
       });
@@ -75,6 +103,7 @@ export async function POST(request: Request) {
     const result = await preference.create({
       body: {
         items: items,
+        external_reference: registroVenta?.id, // 👈 Se vincula el ID de Supabase
         back_urls: {
           success: 'https://virtualuxurytulum.com/lukas',
           failure: 'https://virtualuxurytulum.com/lukas',
