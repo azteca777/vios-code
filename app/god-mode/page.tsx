@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Activity, DollarSign, Zap, Camera, TrendingUp, ShoppingCart, Filter } from 'lucide-react';
+import { Activity, DollarSign, Zap, Camera, ShoppingCart, Filter, Eye } from 'lucide-react';
 
 // 🛡️ Conexión a la Matriz (Supabase)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -13,25 +13,38 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 export default function GodModeDashboard() {
   const [ventas, setVentas] = useState<any[]>([]);
   const [clientesSaaS, setClientesSaaS] = useState<any[]>([]);
+  const [trafico, setTrafico] = useState<any[]>([]);
   const [filtroTienda, setFiltroTienda] = useState('TODAS');
 
   useEffect(() => {
     async function fetchData() {
+      // 1. Traer Ventas
       const { data: dataVentas } = await supabase.from('ventas').select('*');
       if (dataVentas) setVentas(dataVentas);
 
+      // 2. Traer Clientes SaaS
       const { data: dataClientes } = await supabase.from('clientes_saas').select('*');
       if (dataClientes) setClientesSaaS(dataClientes);
+
+      // 3. Traer Tráfico del Radar
+      const { data: dataTrafico } = await supabase.from('trafico_diario').select('*');
+      if (dataTrafico) setTrafico(dataTrafico);
     }
     fetchData();
   }, []);
 
-  // 🧠 CEREBRO DEL DRILL-DOWN: Filtrar ventas según lo que elijas en el menú
+  // 🧠 CEREBRO DEL DRILL-DOWN: Filtrar según lo que elijas en el menú
   const ventasFiltradas = filtroTienda === 'TODAS' 
     ? ventas 
     : ventas.filter(v => v.tienda_id === filtroTienda);
 
-  // 📊 SEPARACIÓN DE MÉTRICAS: Reales vs Intentos
+  const traficoFiltrado = filtroTienda === 'TODAS'
+    ? trafico
+    : trafico.filter(t => t.tienda_id === filtroTienda);
+
+  // 📊 SEPARACIÓN DE MÉTRICAS
+  const totalVisitas = traficoFiltrado.length;
+  
   const ventasReales = ventasFiltradas.filter(v => v.estado === 'completado' || v.estado === 'pagado');
   const intentosVenta = ventasFiltradas.filter(v => v.estado === 'intento_de_pago');
 
@@ -39,8 +52,10 @@ export default function GodModeDashboard() {
   const totalComisionesReales = ventasReales.reduce((acc, v) => acc + Number(v.comision_vios), 0);
   const totalVolumenIntentos = intentosVenta.reduce((acc, v) => acc + Number(v.total), 0);
 
-  // Obtener lista única de tiendas para el menú
-  const tiendasDisponibles = ['TODAS', ...Array.from(new Set(ventas.map(v => v.tienda_id)))];
+  // Obtener lista única de tiendas combinando las que tienen ventas y las que tienen tráfico
+  const tiendasConVentas = ventas.map(v => v.tienda_id);
+  const tiendasConTrafico = trafico.map(t => t.tienda_id);
+  const tiendasDisponibles = ['TODAS', ...Array.from(new Set([...tiendasConVentas, ...tiendasConTrafico]))];
 
   // Datos para la gráfica
   const datosGraficaVentas = ventasFiltradas.reduce((acc: any[], venta) => {
@@ -89,16 +104,16 @@ export default function GodModeDashboard() {
         </div>
       </header>
 
-      {/* TARJETAS DE MÉTRICAS */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+      {/* TARJETAS DE MÉTRICAS (EL EMBUDO DE 4 PASOS) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
         
-        {/* Tarjeta 1: Total Real */}
-        <div className="bg-white p-6 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border-t-4 border-lime-400 relative overflow-hidden group">
+        {/* Tarjeta 1: Radar de Tráfico */}
+        <div className="bg-white p-6 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border-t-4 border-amber-400 relative overflow-hidden group">
           <p className="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
-            <Activity className="w-4 h-4 text-lime-500" /> Ventas Reales (Cobradas)
+            <Eye className="w-4 h-4 text-amber-500" /> Tráfico Radar
           </p>
-          <h2 className="text-4xl font-black tracking-tighter text-black">${totalVolumenReal.toLocaleString('es-MX')}</h2>
-          <p className="text-[10px] text-zinc-400 mt-2">{ventasReales.length} transacciones exitosas</p>
+          <h2 className="text-4xl font-black tracking-tighter text-black">{totalVisitas.toLocaleString('es-MX')}</h2>
+          <p className="text-[10px] text-zinc-400 mt-2">Visitas detectadas en ecosistema</p>
         </div>
 
         {/* Tarjeta 2: Intentos / Carritos Abandonados */}
@@ -110,14 +125,23 @@ export default function GodModeDashboard() {
           <p className="text-[10px] text-zinc-400 mt-2">{intentosVenta.length} carritos abandonados</p>
         </div>
 
-        {/* Tarjeta 3: Tu Dinero (Comisiones) */}
-        <div className="md:col-span-2 bg-zinc-950 p-6 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] relative overflow-hidden group">
+        {/* Tarjeta 3: Total Real */}
+        <div className="bg-white p-6 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border-t-4 border-lime-400 relative overflow-hidden group">
+          <p className="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
+            <Activity className="w-4 h-4 text-lime-500" /> Ventas Reales
+          </p>
+          <h2 className="text-4xl font-black tracking-tighter text-black">${totalVolumenReal.toLocaleString('es-MX')}</h2>
+          <p className="text-[10px] text-zinc-400 mt-2">{ventasReales.length} transacciones exitosas</p>
+        </div>
+
+        {/* Tarjeta 4: Tu Dinero (Comisiones) */}
+        <div className="bg-zinc-950 p-6 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] relative overflow-hidden group">
           <div className="absolute -right-10 -top-10 bg-cyan-900 w-32 h-32 rounded-full blur-3xl opacity-50 group-hover:bg-cyan-800 transition-all"></div>
           <p className="text-xs font-black uppercase tracking-widest text-cyan-400 flex items-center gap-2 mb-2">
-            <DollarSign className="w-4 h-4 text-cyan-400" /> Revenue ViOs (Garantizado)
+            <DollarSign className="w-4 h-4 text-cyan-400" /> Revenue ViOs
           </p>
-          <h2 className="text-5xl font-black tracking-tighter text-white drop-shadow-[0_0_15px_rgba(6,182,212,0.4)]">${totalComisionesReales.toLocaleString('es-MX')}</h2>
-          <p className="text-[10px] text-zinc-400 mt-2">Comisiones netas listas para retiro a tu banco</p>
+          <h2 className="text-4xl font-black tracking-tighter text-white drop-shadow-[0_0_15px_rgba(6,182,212,0.4)]">${totalComisionesReales.toLocaleString('es-MX')}</h2>
+          <p className="text-[10px] text-zinc-400 mt-2">Garantizado para retiro</p>
         </div>
 
       </div>
@@ -160,7 +184,6 @@ export default function GodModeDashboard() {
               <p className="text-sm text-zinc-400 italic">Cargando ecosistemas conectados...</p>
             ) : (
               clientesSaaS.map((cliente) => {
-                // 🧠 Lógica inteligente: ¿Tiene o no tiene espejo?
                 const tieneEspejo = cliente.limite_espejo_mensual > 0;
                 const porcentajeUso = tieneEspejo ? (cliente.espejo_usos_mes_actual / cliente.limite_espejo_mensual) * 100 : 0;
                 
@@ -171,7 +194,6 @@ export default function GodModeDashboard() {
                 return (
                   <div key={cliente.id} className="group">
                     <div className="flex justify-between items-end mb-2">
-                      {/* INYECCIÓN DE LOS LOGOS AQUÍ */}
                       <div className="flex items-center gap-3">
                         {cliente.logo_url ? (
                           <img 
@@ -190,7 +212,6 @@ export default function GodModeDashboard() {
                         {tieneEspejo ? `${cliente.espejo_usos_mes_actual} / ${cliente.limite_espejo_mensual} usos` : 'SIN ESPEJO AR'}
                       </span>
                     </div>
-                    {/* Renderizado Condicional de la Barra */}
                     {tieneEspejo ? (
                       <div className="w-full h-2.5 bg-zinc-100 rounded-full overflow-hidden">
                         <div 
@@ -209,7 +230,6 @@ export default function GodModeDashboard() {
             )}
           </div>
 
-          {/* BOTÓN RESTAURADO AHORA SÍ DENTRO DE LA TARJETA */}
           <button className="mt-8 w-full bg-black text-white text-xs font-bold uppercase tracking-widest py-4 rounded-xl hover:bg-zinc-800 transition-all shadow-[0_10px_20px_-10px_rgba(0,0,0,0.3)]">
             Gestionar Límites
           </button>
