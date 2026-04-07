@@ -171,9 +171,21 @@ export default function GodModeDashboard() {
                 return (
                   <div key={cliente.id} className="group">
                     <div className="flex justify-between items-end mb-2">
-                      <span className="text-xs font-black uppercase tracking-widest text-zinc-800 group-hover:text-cyan-500 transition-colors">
-                        {cliente.nombre_marca}
-                      </span>
+                      {/* INYECCIÓN DE LOS LOGOS AQUÍ */}
+                      <div className="flex items-center gap-3">
+                        {cliente.logo_url ? (
+                          <img 
+                            src={cliente.logo_url} 
+                            alt={cliente.nombre_marca} 
+                            className="w-7 h-7 rounded-full object-cover border border-zinc-200 shadow-sm"
+                          />
+                        ) : (
+                          <div className="w-7 h-7 rounded-full bg-zinc-200 border border-zinc-300 shadow-sm"></div>
+                        )}
+                        <span className="text-xs font-black uppercase tracking-widest text-zinc-800 group-hover:text-cyan-500 transition-colors">
+                          {cliente.nombre_marca}
+                        </span>
+                      </div>
                       <span className="text-[10px] font-bold text-zinc-400">
                         {tieneEspejo ? `${cliente.espejo_usos_mes_actual} / ${cliente.limite_espejo_mensual} usos` : 'SIN ESPEJO AR'}
                       </span>
@@ -187,7 +199,7 @@ export default function GodModeDashboard() {
                         ></div>
                       </div>
                     ) : (
-                      <div className="w-full h-2.5 bg-zinc-50 border border-zinc-100 rounded-full overflow-hidden flex items-center justify-center">
+                      <div className="w-full h-2.5 bg-zinc-50 border border-zinc-100 rounded-full overflow-hidden flex items-center justify-center mt-1">
                          <span className="text-[8px] tracking-[0.2em] text-zinc-300 font-bold">N/A</span>
                       </div>
                     )}
