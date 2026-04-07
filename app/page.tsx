@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import SensorTrafico from './components/SensorTrafico';
 
 export default function ViosCodeMatriz() {
   const [idioma, setIdioma] = useState('es');
@@ -35,6 +36,10 @@ export default function ViosCodeMatriz() {
 
       {/* CONTENIDO PRINCIPAL QUE CRECE PARA EMPUJAR EL FOOTER */}
       <main className="flex-grow">
+        
+        {/* 📡 SENSOR DE TRÁFICO INVISIBLE (RADAR ACTIVADO) */}
+        <SensorTrafico marca="VIOS_MAIN" />
+
         {/* 👤 SECCIÓN 1: LOGOS Y BIOGRAFÍA */}
         <section className="pt-36 px-6 max-w-7xl mx-auto flex flex-col items-center justify-center mb-24 relative">
           
