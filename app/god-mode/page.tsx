@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Activity, DollarSign, Zap, Camera, ShoppingCart, Filter, Eye } from 'lucide-react';
+import { Activity, DollarSign, Zap, Camera, ShoppingCart, Filter, Eye, ChevronRight, X, Package } from 'lucide-react';
 
 // 🛡️ Conexión a la Matriz (Supabase)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -15,6 +15,9 @@ export default function GodModeDashboard() {
   const [clientesSaaS, setClientesSaaS] = useState<any[]>([]);
   const [trafico, setTrafico] = useState<any[]>([]);
   const [filtroTienda, setFiltroTienda] = useState('TODAS');
+  
+  // 👁️ NUEVO ESTADO: Controla la visibilidad del modal de carritos abandonados
+  const [modalIntentosAbierto, setModalIntentosAbierto] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -70,7 +73,7 @@ export default function GodModeDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-50 p-6 md:p-10 font-sans text-zinc-900 selection:bg-cyan-400 selection:text-black">
+    <div className="min-h-screen bg-zinc-50 p-6 md:p-10 font-sans text-zinc-900 selection:bg-cyan-400 selection:text-black relative">
       
       {/* HEADER NEÓN CON SELECTOR DE TIENDA */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 pb-6 border-b border-zinc-200 gap-4">
@@ -116,13 +119,22 @@ export default function GodModeDashboard() {
           <p className="text-[10px] text-zinc-400 mt-2">Visitas detectadas en ecosistema</p>
         </div>
 
-        {/* Tarjeta 2: Intentos / Carritos Abandonados */}
-        <div className="bg-white p-6 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border-t-4 border-fuchsia-500 relative overflow-hidden group">
-          <p className="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
-            <ShoppingCart className="w-4 h-4 text-fuchsia-500" /> Intentos de Compra
-          </p>
+        {/* 🎯 Tarjeta 2: Intentos / Carritos Abandonados (AHORA INTERACTIVA) */}
+        <div 
+          onClick={() => setModalIntentosAbierto(true)}
+          className="bg-white p-6 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border-t-4 border-fuchsia-500 relative overflow-hidden group cursor-pointer hover:bg-fuchsia-50 transition-colors duration-300"
+        >
+          <div className="flex justify-between items-start">
+            <p className="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2 group-hover:text-fuchsia-600 transition-colors">
+              <ShoppingCart className="w-4 h-4 text-fuchsia-500" /> Intentos de Compra
+            </p>
+            <ChevronRight className="w-4 h-4 text-fuchsia-300 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all" />
+          </div>
           <h2 className="text-4xl font-black tracking-tighter text-black">${totalVolumenIntentos.toLocaleString('es-MX')}</h2>
           <p className="text-[10px] text-zinc-400 mt-2">{intentosVenta.length} carritos abandonados</p>
+          <div className="absolute -bottom-2 -right-2 bg-fuchsia-100 px-3 py-1 rounded-tl-xl opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-[8px] font-black uppercase tracking-widest text-fuchsia-600">Ver Carritos</span>
+          </div>
         </div>
 
         {/* Tarjeta 3: Total Real */}
@@ -237,6 +249,99 @@ export default function GodModeDashboard() {
         </div>
 
       </div>
+
+      {/* 🔍 MODAL: RAYOS X DE CARRITOS ABANDONADOS */}
+      {modalIntentosAbierto && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-4xl max-h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-zinc-200">
+            
+            {/* Cabecera del Modal */}
+            <div className="px-8 py-6 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+              <div>
+                <h2 className="text-2xl font-black uppercase tracking-tighter text-zinc-900 flex items-center gap-3">
+                  <ShoppingCart className="text-fuchsia-500 w-6 h-6" /> 
+                  Rayos X: Carritos Abandonados
+                </h2>
+                <p className="text-xs font-bold uppercase tracking-widest text-zinc-400 mt-1">
+                  {intentosVenta.length} intentos detectados {filtroTienda !== 'TODAS' ? `en ${filtroTienda}` : 'en el ecosistema'}
+                </p>
+              </div>
+              <button 
+                onClick={() => setModalIntentosAbierto(false)}
+                className="w-10 h-10 flex items-center justify-center bg-white border border-zinc-200 rounded-full hover:bg-zinc-100 hover:text-red-500 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Lista de Carritos */}
+            <div className="flex-1 overflow-y-auto p-8 bg-white space-y-6">
+              {intentosVenta.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-zinc-400">
+                  <Package className="w-12 h-12 mb-4 opacity-20" />
+                  <p className="text-sm font-bold uppercase tracking-widest">No hay carritos abandonados aquí</p>
+                </div>
+              ) : (
+                intentosVenta.map((intento, idx) => {
+                  // Parsear el carrito si viene como string desde la base de datos
+                  let articulos = [];
+                  if (intento.carrito) {
+                    articulos = typeof intento.carrito === 'string' ? JSON.parse(intento.carrito) : intento.carrito;
+                  }
+
+                  return (
+                    <div key={intento.id || idx} className="border border-zinc-200 rounded-2xl p-6 bg-zinc-50/50 hover:border-fuchsia-300 transition-colors">
+                      <div className="flex justify-between items-start mb-4 border-b border-zinc-200 pb-4">
+                        <div>
+                          <span className="bg-zinc-900 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
+                            {intento.tienda_id}
+                          </span>
+                          <p className="text-[10px] text-zinc-500 font-bold mt-2 uppercase tracking-wider">
+                            Fecha: {new Date(intento.created_at || Date.now()).toLocaleString('es-MX')}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-zinc-400 font-bold uppercase tracking-widest mb-1">Total Abandonado</p>
+                          <p className="text-xl font-black text-fuchsia-600">${Number(intento.total).toLocaleString('es-MX')}</p>
+                        </div>
+                      </div>
+
+                      {/* Lista interna de artículos del carrito */}
+                      <div className="space-y-3">
+                        {articulos.length > 0 ? (
+                          articulos.map((item: any, i: number) => (
+                            <div key={i} className="flex justify-between items-center bg-white p-3 rounded-xl border border-zinc-100 shadow-sm">
+                              <div className="flex items-center gap-3">
+                                {item.imagen ? (
+                                  <img src={item.imagen} alt={item.nombre} className="w-10 h-10 rounded-md object-cover border border-zinc-100" />
+                                ) : (
+                                  <div className="w-10 h-10 bg-zinc-100 rounded-md flex items-center justify-center"><Package className="w-4 h-4 text-zinc-300" /></div>
+                                )}
+                                <div>
+                                  <p className="text-[10px] font-black uppercase text-zinc-400 tracking-widest">{item.marca || 'Producto'}</p>
+                                  <p className="text-sm font-bold text-zinc-800 line-clamp-1">{item.nombre || item.nombreEs}</p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm font-black text-zinc-900">${(Number(item.precio) || 0).toLocaleString('es-MX')}</p>
+                                <p className="text-[10px] text-zinc-400 font-bold uppercase">Cant: {item.cantidad || 1}</p>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-xs text-zinc-400 italic">Los detalles de los artículos no fueron guardados en este intento.</p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+            
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
