@@ -38,7 +38,7 @@ export async function POST(request: Request) {
           metodo_pago: gateway,
           comision_vios: comisionCalculada,
           estado: 'intento_de_pago', 
-          productos: carrito
+          carrito: carrito // ✅ CORREGIDO: Ahora se llama 'carrito' para que los Rayos X lo detecten
         }
       ])
       .select()
@@ -71,8 +71,9 @@ export async function POST(request: Request) {
         line_items: lineItems,
         mode: 'payment',
         client_reference_id: registroVenta?.id, // 👈 Se vincula el ID de Supabase
-        success_url: 'https://virtualuxurytulum.com/lukas?pago=exitoso',
-        cancel_url: 'https://virtualuxurytulum.com/lukas?pago=cancelado',
+        // Redirecciones dinámicas según la tienda
+        success_url: `https://virtualuxurytulum.com/${tienda.toLowerCase()}?pago=exitoso`,
+        cancel_url: `https://virtualuxurytulum.com/${tienda.toLowerCase()}?pago=cancelado`,
       });
 
       return NextResponse.json({ urlPago: session.url }, { headers: corsHeaders });
@@ -82,12 +83,19 @@ export async function POST(request: Request) {
     // 🇲🇽 RUTA 2: MOTOR LATAM (MERCADO PAGO)
     // ==========================================
     let tokenActivo = '';
+    
+    // ✅ CORREGIDO: El Switch ahora reconoce los nuevos nombres y los enruta a tu token.
+    // Cuando las marcas tengan sus propias cuentas de MP, aquí pondrás sus tokens.
     switch (tienda) {
-      case 'vios_test':
+      case 'LUKAS':
+      case 'BERNARDITA':
+      case 'MULATA':
+      case 'OASIS':
+      case 'vios_test': // Lo dejamos por si haces pruebas manuales
         tokenActivo = process.env.MP_TOKEN_VIOS || ''; 
         break;
       default:
-        return NextResponse.json({ error: 'Tienda no reconocida' }, { status: 400, headers: corsHeaders });
+        return NextResponse.json({ error: `Tienda no reconocida: ${tienda}` }, { status: 400, headers: corsHeaders });
     }
 
     const client = new MercadoPagoConfig({ accessToken: tokenActivo });
@@ -105,9 +113,10 @@ export async function POST(request: Request) {
         items: items,
         external_reference: registroVenta?.id, // 👈 Se vincula el ID de Supabase
         back_urls: {
-          success: 'https://virtualuxurytulum.com/lukas',
-          failure: 'https://virtualuxurytulum.com/lukas',
-          pending: 'https://virtualuxurytulum.com/lukas',
+          // Redirecciones dinámicas
+          success: `https://virtualuxurytulum.com/${tienda.toLowerCase()}`,
+          failure: `https://virtualuxurytulum.com/${tienda.toLowerCase()}`,
+          pending: `https://virtualuxurytulum.com/${tienda.toLowerCase()}`,
         },
         auto_return: 'approved',
       }
