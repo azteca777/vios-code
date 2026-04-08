@@ -16,8 +16,9 @@ export default function GodModeDashboard() {
   const [trafico, setTrafico] = useState<any[]>([]);
   const [filtroTienda, setFiltroTienda] = useState('TODAS');
   
-  // 👁️ NUEVO ESTADO: Controla la visibilidad del modal de carritos abandonados
+  // 👁️ ESTADOS DE LOS MODALES
   const [modalIntentosAbierto, setModalIntentosAbierto] = useState(false);
+  const [modalTraficoAbierto, setModalTraficoAbierto] = useState(false); // 👈 NUEVO: Modal de Tráfico
 
   useEffect(() => {
     async function fetchData() {
@@ -60,7 +61,7 @@ export default function GodModeDashboard() {
   const tiendasConTrafico = trafico.map(t => t.tienda_id);
   const tiendasDisponibles = ['TODAS', ...Array.from(new Set([...tiendasConVentas, ...tiendasConTrafico]))];
 
-  // Datos para la gráfica
+  // Datos para la gráfica principal
   const datosGraficaVentas = ventasFiltradas.reduce((acc: any[], venta) => {
     const etiqueta = filtroTienda === 'TODAS' ? venta.tienda_id : venta.estado;
     const item = acc.find(t => t.name === etiqueta);
@@ -71,6 +72,17 @@ export default function GodModeDashboard() {
     }
     return acc;
   }, []);
+
+  // 🧮 NUEVO: Agrupar y contar el tráfico por tienda para la lista
+  const desgloseTrafico = Object.entries(
+    trafico.reduce((acc: any, visita: any) => {
+      const tienda = visita.tienda_id || 'Desconocida';
+      acc[tienda] = (acc[tienda] || 0) + 1;
+      return acc;
+    }, {})
+  )
+  .map(([nombre, cantidad]) => ({ nombre, cantidad }))
+  .sort((a: any, b: any) => b.cantidad - a.cantidad); // Ordenar de mayor a menor
 
   return (
     <div className="min-h-screen bg-zinc-50 p-6 md:p-10 font-sans text-zinc-900 selection:bg-cyan-400 selection:text-black relative">
@@ -107,19 +119,30 @@ export default function GodModeDashboard() {
         </div>
       </header>
 
-      {/* TARJETAS DE MÉTRICAS (EL EMBUDO DE 4 PASOS) */}
+      {/* TARJETAS DE MÉTRICAS */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
         
-        {/* Tarjeta 1: Radar de Tráfico */}
-        <div className="bg-white p-6 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border-t-4 border-amber-400 relative overflow-hidden group">
-          <p className="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
-            <Eye className="w-4 h-4 text-amber-500" /> Tráfico Radar
-          </p>
+        {/* 👁️ Tarjeta 1: Radar de Tráfico (AHORA INTERACTIVA SOLO EN "TODAS") */}
+        <div 
+          onClick={() => { if (filtroTienda === 'TODAS') setModalTraficoAbierto(true); }}
+          className={`bg-white p-6 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border-t-4 border-amber-400 relative overflow-hidden group ${filtroTienda === 'TODAS' ? 'cursor-pointer hover:bg-amber-50 transition-colors duration-300' : ''}`}
+        >
+          <div className="flex justify-between items-start">
+            <p className="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2 group-hover:text-amber-600 transition-colors">
+              <Eye className="w-4 h-4 text-amber-500" /> Tráfico Radar
+            </p>
+            {filtroTienda === 'TODAS' && <ChevronRight className="w-4 h-4 text-amber-300 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all" />}
+          </div>
           <h2 className="text-4xl font-black tracking-tighter text-black">{totalVisitas.toLocaleString('es-MX')}</h2>
           <p className="text-[10px] text-zinc-400 mt-2">Visitas detectadas en ecosistema</p>
+          {filtroTienda === 'TODAS' && (
+            <div className="absolute -bottom-2 -right-2 bg-amber-100 px-3 py-1 rounded-tl-xl opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="text-[8px] font-black uppercase tracking-widest text-amber-600">Ver Desglose</span>
+            </div>
+          )}
         </div>
 
-        {/* 🎯 Tarjeta 2: Intentos / Carritos Abandonados (AHORA INTERACTIVA) */}
+        {/* 🎯 Tarjeta 2: Intentos / Carritos Abandonados */}
         <div 
           onClick={() => setModalIntentosAbierto(true)}
           className="bg-white p-6 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border-t-4 border-fuchsia-500 relative overflow-hidden group cursor-pointer hover:bg-fuchsia-50 transition-colors duration-300"
@@ -249,6 +272,59 @@ export default function GodModeDashboard() {
         </div>
 
       </div>
+
+      {/* 📡 MODAL: DESGLOSE DE TRÁFICO */}
+      {modalTraficoAbierto && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-2xl max-h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-zinc-200">
+            
+            <div className="px-8 py-6 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
+              <div>
+                <h2 className="text-2xl font-black uppercase tracking-tighter text-zinc-900 flex items-center gap-3">
+                  <Eye className="text-amber-500 w-6 h-6" /> 
+                  Desglose de Tráfico
+                </h2>
+                <p className="text-xs font-bold uppercase tracking-widest text-zinc-400 mt-1">
+                  Páginas más visitadas del ecosistema
+                </p>
+              </div>
+              <button 
+                onClick={() => setModalTraficoAbierto(false)}
+                className="w-10 h-10 flex items-center justify-center bg-white border border-zinc-200 rounded-full hover:bg-zinc-100 hover:text-red-500 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-8 bg-white space-y-4">
+              {desgloseTrafico.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-zinc-400 py-10">
+                  <Eye className="w-12 h-12 mb-4 opacity-20" />
+                  <p className="text-sm font-bold uppercase tracking-widest">No hay tráfico registrado aún</p>
+                </div>
+              ) : (
+                desgloseTrafico.map((item: any, idx: number) => (
+                  <div key={idx} className="flex justify-between items-center border border-zinc-200 rounded-2xl p-5 bg-zinc-50/50 hover:border-amber-300 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center border border-amber-200">
+                        <Activity className="w-5 h-5 text-amber-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-black uppercase text-zinc-800 tracking-wider">{item.nombre}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-black text-amber-500">{item.cantidad.toLocaleString('es-MX')}</p>
+                      <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Visitas</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            
+          </div>
+        </div>
+      )}
 
       {/* 🔍 MODAL: RAYOS X DE CARRITOS ABANDONADOS */}
       {modalIntentosAbierto && (
