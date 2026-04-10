@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 import SensorTrafico from './components/SensorTrafico';
 import { 
@@ -16,6 +17,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function ViosCodeMatriz() {
   const [idioma, setIdioma] = useState('es');
+  const router = useRouter();
   
   // ⚙️ ESTADOS PARA EL FLUJO DE COMPRA
   const [planSeleccionado, setPlanSeleccionado] = useState<any>(null);
@@ -26,19 +28,69 @@ export default function ViosCodeMatriz() {
 
   // 🔐 ESTADOS PARA GOD MODE ACCESS
   const [modalAdminAbierto, setModalAdminAbierto] = useState(false);
-  const [adminEmail, setAdminEmail] = useState('xkript@hotmail.com'); // 👈 RESTAURADO A TU CORREO CORRECTO
+  const [adminEmail, setAdminEmail] = useState('xkript@hotmail.com');
   const [adminPassword, setAdminPassword] = useState('');
   const [cargandoAdmin, setCargandoAdmin] = useState(false);
   const [errorAdmin, setErrorAdmin] = useState('');
   const [isCrearCuenta, setIsCrearCuenta] = useState(false); 
 
+  // 💎 PLANES OFICIALES - REDISEÑADOS CON ESTILOS "NEÓN Y PREMIUM"
   const planes = [
-    { id: 'flex', nombre: 'Plan Flex', precio: 100, color: 'border-zinc-700', desc: 'Toda la base tecnológica activa y cobrando por ti (Esquema por comisión).' },
-    { id: 'basico', nombre: 'Plan Básico', precio: 200, color: 'border-zinc-500', desc: 'Toda la base tecnológica + 3 días de pautas publicitarias en Meta Ads al mes.' },
-    { id: 'clasico', nombre: 'Plan Clásico', precio: 499, color: 'border-zinc-200', desc: '0% Comisión. Incluye WhatsApp bot, Panel BI + 3 días de pautas en Meta Ads al mes.' },
-    { id: 'premium', nombre: 'Plan Premium', precio: 599, color: 'border-[#d4af37]/40', desc: '0% Comisión. WhatsApp bot, Panel BI + 5 días de pautas en Meta Ads de alto valor.' },
-    { id: 'gold', nombre: 'Plan Gold', precio: 799, color: 'border-cyan-400/40', desc: '0% Comisión. Toda la automatización + 15 días de pautas en Meta Ads.' },
-    { id: 'diamond', nombre: 'Plan Diamond', precio: 999, color: 'border-fuchsia-500/40', desc: '0% Comisión. Toda la automatización + 20 días de pautas en Meta Ads. El ecosistema definitivo.' },
+    { 
+      id: 'flex', 
+      nombre: 'Plan Flex', 
+      precio: 100, 
+      borderGrad: 'bg-gradient-to-br from-purple-600 via-fuchsia-500 to-purple-900', // Morado Eléctrico
+      glow: 'hover:shadow-[0_0_40px_rgba(168,85,247,0.4)]',
+      titleHover: 'group-hover:text-fuchsia-400',
+      desc: 'Toda la base tecnológica activa y cobrando por ti (Esquema por comisión).' 
+    },
+    { 
+      id: 'basico', 
+      nombre: 'Plan Básico', 
+      precio: 200, 
+      borderGrad: 'bg-gradient-to-br from-blue-500 via-cyan-400 to-blue-900', // Azul Eléctrico
+      glow: 'hover:shadow-[0_0_40px_rgba(6,182,212,0.4)]',
+      titleHover: 'group-hover:text-cyan-400',
+      desc: 'Toda la base tecnológica + 3 días de pautas publicitarias en Meta Ads al mes.' 
+    },
+    { 
+      id: 'clasico', 
+      nombre: 'Plan Clásico', 
+      precio: 499, 
+      borderGrad: 'bg-gradient-to-br from-emerald-400 via-green-500 to-emerald-900', // Verde Eléctrico
+      glow: 'hover:shadow-[0_0_40px_rgba(16,185,129,0.4)]',
+      titleHover: 'group-hover:text-emerald-400',
+      desc: '0% Comisión. Incluye WhatsApp bot, Panel BI + 3 días de pautas en Meta Ads al mes.' 
+    },
+    { 
+      id: 'premium', 
+      nombre: 'Plan Premium', 
+      precio: 599, 
+      borderGrad: 'bg-gradient-to-br from-gray-300 via-zinc-100 to-gray-600', // Plata Metalizado
+      glow: 'hover:shadow-[0_0_40px_rgba(209,213,219,0.3)]',
+      titleHover: 'group-hover:text-gray-300',
+      desc: '0% Comisión. WhatsApp bot, Panel BI + 5 días de pautas en Meta Ads de alto valor.' 
+    },
+    { 
+      id: 'gold', 
+      nombre: 'Plan Gold', 
+      precio: 799, 
+      borderGrad: 'bg-gradient-to-br from-yellow-500 via-[#d4af37] to-amber-700', // Oro
+      glow: 'hover:shadow-[0_0_40px_rgba(212,175,55,0.4)]',
+      titleHover: 'group-hover:text-[#d4af37]',
+      desc: '0% Comisión. Toda la automatización + 15 días de pautas en Meta Ads.' 
+    },
+    { 
+      id: 'diamond', 
+      nombre: 'Plan Diamond', 
+      precio: 999, 
+      borderGrad: 'bg-gradient-to-tr from-cyan-300 via-white to-fuchsia-300', // Iridescente Diamante
+      glow: 'hover:shadow-[0_0_60px_rgba(103,232,249,0.6)]',
+      titleHover: 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-fuchsia-300', // Letras de diamante permanentes
+      isDiamond: true, // Bandera especial para animaciones
+      desc: '0% Comisión. Toda la automatización + 20 días de pautas en Meta Ads. El ecosistema definitivo.' 
+    },
   ];
 
   const BotonIdioma = () => (
@@ -105,7 +157,6 @@ export default function ViosCodeMatriz() {
         });
         if (error) throw error;
         
-        // 👈 RUTA ABSOLUTA FORZADA A PRODUCCIÓN
         window.location.href = 'https://vioscode.io/god-mode'; 
       }
     } catch (error: any) {
@@ -300,28 +351,53 @@ export default function ViosCodeMatriz() {
           </div>
         </section>
 
-        {/* 💎 SECCIÓN 4: PLANES DE SUSCRIPCIÓN */}
-        <section id="planes" className="bg-zinc-950 py-24 px-6">
+        {/* 💎 SECCIÓN 4: PLANES DE SUSCRIPCIÓN REDISEÑADOS */}
+        <section id="planes" className="bg-zinc-950 py-24 px-6 overflow-hidden">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-white text-4xl md:text-6xl font-black tracking-tighter uppercase mb-4">Membresías SaaS</h2>
+            <div className="text-center mb-20 relative z-10">
+              <h2 className="text-white text-4xl md:text-6xl font-black tracking-tighter uppercase mb-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">Membresías SaaS</h2>
               <p className="text-zinc-400 tracking-widest uppercase font-bold text-sm">Escoge tu nivel de inmersión en el ecosistema</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* GRID DE PLANES CON EFECTOS */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
               {planes.map((plan) => (
-                <div key={plan.id} className={`bg-zinc-900 border ${plan.color} p-8 rounded-[40px] flex flex-col justify-between hover:scale-105 transition-all duration-500 group`}>
-                  <div>
-                    <h3 className="text-white text-2xl font-black uppercase mb-2">{plan.nombre}</h3>
-                    <p className="text-zinc-500 text-xs mb-6 leading-relaxed">{plan.desc}</p>
-                    <div className="flex items-baseline gap-1 mb-8">
-                      <span className="text-4xl font-black text-white">${plan.precio}</span>
-                      <span className="text-zinc-500 font-bold text-xs uppercase tracking-widest">/ Mes</span>
+                <div 
+                  key={plan.id} 
+                  className={`relative p-[2px] rounded-[40px] group transition-all duration-500 hover:-translate-y-4 ${plan.glow} z-10 bg-zinc-900/50`}
+                >
+                  {/* Borde Animado */}
+                  <div className={`absolute inset-0 rounded-[40px] ${plan.borderGrad} opacity-20 group-hover:opacity-100 transition-opacity duration-700 ${plan.isDiamond ? 'animate-pulse opacity-50' : ''}`}></div>
+                  
+                  {/* Tarjeta Interior */}
+                  <div className="relative h-full bg-zinc-950 rounded-[38px] p-8 md:p-10 flex flex-col justify-between overflow-hidden z-20">
+                    
+                    {/* Resplandor interno sutil */}
+                    <div className={`absolute -top-10 -right-10 w-32 h-32 ${plan.borderGrad} blur-[50px] opacity-10 group-hover:opacity-20 transition-opacity duration-500 rounded-full`}></div>
+
+                    <div>
+                      <h3 className={`text-2xl font-black uppercase mb-3 text-white transition-colors duration-300 ${plan.titleHover}`}>
+                        {plan.nombre}
+                      </h3>
+                      <p className="text-zinc-400 text-xs mb-8 leading-relaxed font-medium min-h-[40px]">
+                        {plan.desc}
+                      </p>
+                      <div className="flex items-baseline gap-1 mb-10">
+                        <span className="text-5xl font-black text-white tracking-tighter">${plan.precio}</span>
+                        <span className="text-zinc-600 font-bold text-xs uppercase tracking-widest">/ Mes</span>
+                      </div>
                     </div>
+                    
+                    <button 
+                      onClick={() => { setPlanSeleccionado(plan); setPasoCompra(1); }} 
+                      className="w-full relative py-4 bg-white text-black font-black uppercase tracking-widest text-xs rounded-2xl overflow-hidden group-hover:shadow-lg transition-all"
+                    >
+                      <span className="relative z-10">Seleccionar Plan</span>
+                      {/* Efecto de barrido en el botón al hacer hover */}
+                      <div className={`absolute inset-0 w-full h-full ${plan.borderGrad} opacity-0 group-hover:opacity-20 transition-opacity duration-300`}></div>
+                    </button>
+
                   </div>
-                  <button onClick={() => { setPlanSeleccionado(plan); setPasoCompra(1); }} className="w-full py-4 bg-white text-black font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-[#d4af37] transition-colors">
-                    Seleccionar Plan
-                  </button>
                 </div>
               ))}
             </div>
