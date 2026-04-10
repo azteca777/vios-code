@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Activity, DollarSign, Zap, Camera, ShoppingCart, Filter, Eye, ChevronRight, X, Package } from 'lucide-react';
+import { Activity, DollarSign, Zap, Camera, ShoppingCart, Filter, Eye, ChevronRight, X, Package, Settings2, Save } from 'lucide-react';
 
 // 🛡️ Conexión a la Matriz (Supabase)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -18,7 +18,12 @@ export default function GodModeDashboard() {
   
   // 👁️ ESTADOS DE LOS MODALES
   const [modalIntentosAbierto, setModalIntentosAbierto] = useState(false);
-  const [modalTraficoAbierto, setModalTraficoAbierto] = useState(false); // 👈 NUEVO: Modal de Tráfico
+  const [modalTraficoAbierto, setModalTraficoAbierto] = useState(false);
+
+  // ⚙️ ESTADOS PARA LAS PALANCAS DE MANDO
+  const [guardandoConfig, setGuardandoConfig] = useState(false);
+  const [comisionActivaLocal, setComisionActivaLocal] = useState(false);
+  const [porcentajeLocal, setPorcentajeLocal] = useState(10);
 
   useEffect(() => {
     async function fetchData() {
@@ -37,6 +42,17 @@ export default function GodModeDashboard() {
     fetchData();
   }, []);
 
+  // 🔄 Sincronizar los controles locales cuando cambias de tienda
+  useEffect(() => {
+    if (filtroTienda !== 'TODAS') {
+      const clienteSeleccionado = clientesSaaS.find(c => c.nombre_marca === filtroTienda);
+      if (clienteSeleccionado) {
+        setComisionActivaLocal(clienteSeleccionado.comision_activa || false);
+        setPorcentajeLocal((clienteSeleccionado.porcentaje_comision_ventas || 0) * 100);
+      }
+    }
+  }, [filtroTienda, clientesSaaS]);
+
   // 🧠 CEREBRO DEL DRILL-DOWN: Filtrar según lo que elijas en el menú
   const ventasFiltradas = filtroTienda === 'TODAS' 
     ? ventas 
@@ -48,7 +64,6 @@ export default function GodModeDashboard() {
 
   // 📊 SEPARACIÓN DE MÉTRICAS
   const totalVisitas = traficoFiltrado.length;
-  
   const ventasReales = ventasFiltradas.filter(v => v.estado === 'completado' || v.estado === 'pagado');
   const intentosVenta = ventasFiltradas.filter(v => v.estado === 'intento_de_pago');
 
@@ -73,7 +88,7 @@ export default function GodModeDashboard() {
     return acc;
   }, []);
 
-  // 🧮 NUEVO: Agrupar y contar el tráfico por tienda para la lista
+  // Agrupar y contar el tráfico por tienda para la lista
   const desgloseTrafico = Object.entries(
     trafico.reduce((acc: any, visita: any) => {
       const tienda = visita.tienda_id || 'Desconocida';
@@ -82,7 +97,37 @@ export default function GodModeDashboard() {
     }, {})
   )
   .map(([nombre, cantidad]) => ({ nombre, cantidad }))
-  .sort((a: any, b: any) => b.cantidad - a.cantidad); // Ordenar de mayor a menor
+  .sort((a: any, b: any) => b.cantidad - a.cantidad);
+
+  // 💾 FUNCIÓN PARA GUARDAR LAS PALANCAS EN LA MATRIZ
+  const guardarConfiguracion = async () => {
+    setGuardandoConfig(true);
+    try {
+      const { error } = await supabase
+        .from('clientes_saas')
+        .update({ 
+          comision_activa: comisionActivaLocal, 
+          porcentaje_comision_ventas: porcentajeLocal / 100 
+        })
+        .eq('nombre_marca', filtroTienda);
+
+      if (error) throw error;
+      
+      // Actualizar estado local para reflejar el cambio sin recargar
+      setClientesSaaS(clientesSaaS.map(c => 
+        c.nombre_marca === filtroTienda 
+          ? { ...c, comision_activa: comisionActivaLocal, porcentaje_comision_ventas: porcentajeLocal / 100 } 
+          : c
+      ));
+      
+      alert("Configuración de ViOs guardada con éxito en la Matriz.");
+    } catch (error) {
+      console.error("Error al guardar:", error);
+      alert("Hubo un error al guardar la configuración.");
+    } finally {
+      setGuardandoConfig(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-zinc-50 p-6 md:p-10 font-sans text-zinc-900 selection:bg-cyan-400 selection:text-black relative">
@@ -98,7 +143,6 @@ export default function GodModeDashboard() {
         </div>
         
         <div className="flex items-center gap-4">
-          {/* SELECTOR DE TIENDAS */}
           <div className="flex items-center gap-2 bg-white px-4 py-3 rounded-2xl shadow-sm border border-zinc-200">
             <Filter className="w-4 h-4 text-zinc-400" />
             <select 
@@ -119,10 +163,64 @@ export default function GodModeDashboard() {
         </div>
       </header>
 
+      {/* 🎛️ PANEL DE CONTROL (Solo visible si se elige una tienda específica) */}
+      {filtroTienda !== 'TODAS' && (
+        <div className="mb-10 bg-zinc-950 rounded-3xl p-6 md:p-8 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] border border-zinc-800 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="absolute -left-10 -top-10 bg-cyan-900 w-40 h-40 rounded-full blur-3xl opacity-30"></div>
+          
+          <div className="relative z-10 flex-1">
+            <h3 className="text-xl font-black text-white uppercase tracking-widest flex items-center gap-3 mb-1">
+              <Settings2 className="w-6 h-6 text-cyan-400" />
+              Palancas de Mando: <span className="text-cyan-400">{filtroTienda}</span>
+            </h3>
+            <p className="text-zinc-400 text-xs tracking-widest uppercase font-bold">Ajustes del motor de pagos y revenue</p>
+          </div>
+
+          <div className="relative z-10 flex items-center gap-8 w-full md:w-auto">
+            
+            {/* Toggle Encendido/Apagado */}
+            <div className="flex items-center gap-4">
+              <span className={`text-xs font-black uppercase tracking-widest ${comisionActivaLocal ? 'text-green-400' : 'text-zinc-500'}`}>
+                {comisionActivaLocal ? 'Comisión ON' : 'Comisión OFF'}
+              </span>
+              <button 
+                onClick={() => setComisionActivaLocal(!comisionActivaLocal)}
+                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 focus:outline-none ${comisionActivaLocal ? 'bg-green-500' : 'bg-zinc-700'}`}
+              >
+                <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition duration-300 ${comisionActivaLocal ? 'translate-x-7' : 'translate-x-1'}`} />
+              </button>
+            </div>
+
+            {/* Selector de Porcentaje */}
+            <div className={`transition-opacity duration-300 flex items-center gap-3 ${!comisionActivaLocal ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
+              <div className="bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2 flex items-center gap-2 focus-within:border-cyan-400 transition-colors">
+                <input 
+                  type="number" 
+                  min="0" max="100" 
+                  value={porcentajeLocal}
+                  onChange={(e) => setPorcentajeLocal(Number(e.target.value))}
+                  className="bg-transparent w-12 text-white font-black text-xl outline-none text-center"
+                />
+                <span className="text-cyan-400 font-black text-xl">%</span>
+              </div>
+            </div>
+
+            {/* Botón de Guardar */}
+            <button 
+              onClick={guardarConfiguracion}
+              disabled={guardandoConfig}
+              className="bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest text-xs px-6 py-3 rounded-xl flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] disabled:opacity-50"
+            >
+              {guardandoConfig ? 'Guardando...' : <><Save className="w-4 h-4" /> Aplicar</>}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* TARJETAS DE MÉTRICAS */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
         
-        {/* 👁️ Tarjeta 1: Radar de Tráfico (AHORA INTERACTIVA SOLO EN "TODAS") */}
+        {/* Tarjeta 1: Radar de Tráfico */}
         <div 
           onClick={() => { if (filtroTienda === 'TODAS') setModalTraficoAbierto(true); }}
           className={`bg-white p-6 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border-t-4 border-amber-400 relative overflow-hidden group ${filtroTienda === 'TODAS' ? 'cursor-pointer hover:bg-amber-50 transition-colors duration-300' : ''}`}
@@ -135,14 +233,9 @@ export default function GodModeDashboard() {
           </div>
           <h2 className="text-4xl font-black tracking-tighter text-black">{totalVisitas.toLocaleString('es-MX')}</h2>
           <p className="text-[10px] text-zinc-400 mt-2">Visitas detectadas en ecosistema</p>
-          {filtroTienda === 'TODAS' && (
-            <div className="absolute -bottom-2 -right-2 bg-amber-100 px-3 py-1 rounded-tl-xl opacity-0 group-hover:opacity-100 transition-opacity">
-              <span className="text-[8px] font-black uppercase tracking-widest text-amber-600">Ver Desglose</span>
-            </div>
-          )}
         </div>
 
-        {/* 🎯 Tarjeta 2: Intentos / Carritos Abandonados */}
+        {/* Tarjeta 2: Intentos / Carritos Abandonados */}
         <div 
           onClick={() => setModalIntentosAbierto(true)}
           className="bg-white p-6 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border-t-4 border-fuchsia-500 relative overflow-hidden group cursor-pointer hover:bg-fuchsia-50 transition-colors duration-300"
@@ -155,9 +248,6 @@ export default function GodModeDashboard() {
           </div>
           <h2 className="text-4xl font-black tracking-tighter text-black">${totalVolumenIntentos.toLocaleString('es-MX')}</h2>
           <p className="text-[10px] text-zinc-400 mt-2">{intentosVenta.length} carritos abandonados</p>
-          <div className="absolute -bottom-2 -right-2 bg-fuchsia-100 px-3 py-1 rounded-tl-xl opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="text-[8px] font-black uppercase tracking-widest text-fuchsia-600">Ver Carritos</span>
-          </div>
         </div>
 
         {/* Tarjeta 3: Total Real */}
@@ -331,7 +421,6 @@ export default function GodModeDashboard() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
           <div className="bg-white w-full max-w-4xl max-h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-zinc-200">
             
-            {/* Cabecera del Modal */}
             <div className="px-8 py-6 border-b border-zinc-100 flex justify-between items-center bg-zinc-50">
               <div>
                 <h2 className="text-2xl font-black uppercase tracking-tighter text-zinc-900 flex items-center gap-3">
@@ -350,7 +439,6 @@ export default function GodModeDashboard() {
               </button>
             </div>
 
-            {/* Lista de Carritos */}
             <div className="flex-1 overflow-y-auto p-8 bg-white space-y-6">
               {intentosVenta.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-zinc-400">
@@ -359,7 +447,6 @@ export default function GodModeDashboard() {
                 </div>
               ) : (
                 intentosVenta.map((intento, idx) => {
-                  // Parsear el carrito si viene como string desde la base de datos
                   let articulos = [];
                   if (intento.carrito) {
                     articulos = typeof intento.carrito === 'string' ? JSON.parse(intento.carrito) : intento.carrito;
@@ -382,7 +469,6 @@ export default function GodModeDashboard() {
                         </div>
                       </div>
 
-                      {/* Lista interna de artículos del carrito */}
                       <div className="space-y-3">
                         {articulos.length > 0 ? (
                           articulos.map((item: any, i: number) => (
