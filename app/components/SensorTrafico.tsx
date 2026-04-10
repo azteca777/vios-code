@@ -3,27 +3,64 @@
 import { useEffect, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Conexión a tu Bóveda (asegúrate de que el proyecto donde lo uses tenga estas variables)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-export default function SensorTrafico({ marca }: { marca: string }) {
-  const registrado = useRef(false);
+interface SensorProps {
+  marca: string;
+}
+
+export default function SensorTrafico({ marca }: SensorProps) {
+  const rastreado = useRef(false);
 
   useEffect(() => {
-    // Esto evita que cuente doble cuando estás programando en modo desarrollo
-    if (registrado.current) return; 
-    registrado.current = true;
+    // Evitar que registre dos veces en desarrollo (React Strict Mode)
+    if (rastreado.current) return;
+    rastreado.current = true;
 
     async function registrarVisita() {
-      // Manda el "ping" silencioso a Supabase
-      await supabase.from('trafico_diario').insert([{ tienda_id: marca }]);
+      try {
+        // 1. Intentamos conseguir la ubicación del visitante
+        let ciudadVisitante = 'Desconocida';
+        let paisVisitante = 'Desconocido';
+
+        try {
+          const respuestaUbicacion = await fetch('https://ipapi.co/json/');
+          const datosUbicacion = await respuestaUbicacion.json();
+          
+          if (datosUbicacion.city) {
+            ciudadVisitante = datosUbicacion.city;
+            paisVisitante = datosUbicacion.country_name;
+          }
+        } catch (errorUbicacion) {
+          console.log("No se pudo obtener la ubicación (bloqueador de anuncios o error de red).", errorUbicacion);
+        }
+
+        // 2. Disparamos la información a la Matriz (Supabase)
+        const { error } = await supabase
+          .from('trafico_diario')
+          .insert([
+            { 
+              tienda_id: marca,
+              ciudad: ciudadVisitante,
+              pais: paisVisitante
+            }
+          ]);
+
+        if (error) {
+          console.error("Error al registrar tráfico:", error);
+        } else {
+          console.log(`📡 Ping de tráfico detectado en ${marca} desde ${ciudadVisitante}, ${paisVisitante}`);
+        }
+      } catch (err) {
+        console.error("Error crítico en el sensor:", err);
+      }
     }
-    
+
     registrarVisita();
   }, [marca]);
 
-  return null; // 🥷 100% Invisible para el usuario final
+  // Este componente es invisible, no renderiza nada en la pantalla
+  return null;
 }
