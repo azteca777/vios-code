@@ -28,7 +28,7 @@ export default function ViosCodeMatriz() {
 
   // 🔐 ESTADOS PARA GOD MODE ACCESS
   const [modalAdminAbierto, setModalAdminAbierto] = useState(false);
-  const [adminEmail, setAdminEmail] = useState('xkript@hotmail.com');
+  const [adminEmail, setAdminEmail] = useState('osorioalejandro21777@gmail.com');
   const [adminPassword, setAdminPassword] = useState('');
   const [cargandoAdmin, setCargandoAdmin] = useState(false);
   const [errorAdmin, setErrorAdmin] = useState('');
@@ -60,7 +60,6 @@ export default function ViosCodeMatriz() {
     alert("Redirigiendo a la pasarela segura de Stripe para pago recurrente...");
   };
 
-  // 🔐 Función para login actualizada (MODIFICADA PARA MOSTRAR EL ERROR REAL)
   const manejarAccesoGodMode = async (e: React.FormEvent) => {
     e.preventDefault();
     setCargandoAdmin(true);
@@ -86,7 +85,6 @@ export default function ViosCodeMatriz() {
       }
     } catch (error: any) {
       console.error('Error de acceso:', error.message);
-      // 🔥 AHORA SÍ: IMPRIMIMOS EL ERROR REAL DE SUPABASE EN PANTALLA
       setErrorAdmin(`Error de Matriz: ${error.message}`);
     } finally {
       setCargandoAdmin(false);
@@ -356,16 +354,31 @@ export default function ViosCodeMatriz() {
 
               {pasoCompra === 2 && (
                 <div>
-                  <div className="bg-zinc-50 p-6 rounded-2xl border mb-6 text-xs leading-relaxed text-zinc-600 h-64 overflow-y-scroll">
-                    <h4 className="font-black text-black mb-4 uppercase">CONTRATO DE SERVICIOS DIGITALES - VIOS CODE</h4>
-                    <p className="mb-4">Este contrato vincula a <strong>ViOs Code</strong> y <strong>{datosCliente.nombreNegocio}</strong> por un periodo forzoso de {datosCliente.duracionContrato} meses.</p>
-                    <p className="mb-4">1. OBJETO: El cliente adquiere una membresía tipo {planSeleccionado.nombre} con cobro recurrente automático vía Stripe.</p>
-                    <p className="mb-4">2. CANCELACIONES: No se permiten cancelaciones antes de concluir el periodo de {datosCliente.duracionContrato} meses. Aplican renovaciones automáticas.</p>
-                    <p>3. FACTURACIÓN: Stripe generará automáticamente la factura fiscal a los datos proporcionados.</p>
+                  <div className="bg-zinc-50 p-6 rounded-2xl border mb-6 text-[11px] leading-relaxed text-zinc-600 h-64 overflow-y-scroll scrollbar-thin scrollbar-thumb-zinc-300">
+                    <h4 className="font-black text-black mb-4 uppercase text-xs">CONTRATO DE PRESTACIÓN DE SERVICIOS DIGITALES Y TECNOLÓGICOS (SaaS)</h4>
+                    <p className="mb-4">El presente contrato vincula legalmente a <strong>ViOs Code</strong> (en adelante "El Proveedor") y a <strong>{datosCliente.nombreNegocio || 'El Cliente'}</strong> (en adelante "El Cliente") por un periodo inicial forzoso de <strong>{datosCliente.duracionContrato} meses</strong>.</p>
+
+                    <p className="font-black text-black mt-6 mb-1">1. OBJETO DEL CONTRATO Y SERVICIOS</p>
+                    <p className="mb-4">El Cliente adquiere una licencia de uso de software como servicio (SaaS) correspondiente a la membresía <strong>{planSeleccionado?.nombre}</strong>. El Proveedor se compromete a otorgar la infraestructura tecnológica, pasarela de pagos integrada y herramientas digitales especificadas en dicho plan. El Proveedor actúa estrictamente como intermediario y desarrollador tecnológico.</p>
+
+                    <p className="font-black text-black mt-6 mb-1">2. CONDICIONES DE PAGO Y FACTURACIÓN</p>
+                    <p className="mb-4">El Cliente acepta y autoriza el cargo recurrente automático a través de nuestro procesador de pagos verificado (Stripe) por la cantidad mensual estipulada en su plan. En caso de fallos técnicos o fondos insuficientes en el método de pago, el servicio podrá suspenderse de manera automática. La factura fiscal correspondiente será generada y enviada automáticamente por la plataforma de Stripe a los datos proporcionados durante este registro.</p>
+
+                    <p className="font-black text-black mt-6 mb-1">3. VIGENCIA Y CANCELACIÓN</p>
+                    <p className="mb-4">El presente servicio cuenta con un periodo de permanencia mínimo obligatorio de <strong>{datosCliente.duracionContrato} meses</strong>. Este plan podrá cancelarse única y exclusivamente una vez cumplido dicho plazo. El proceso de cancelación es sencillo: El Cliente deberá enviar un correo electrónico formal de solicitud de baja a <strong>osorioalejandro21777@gmail.com</strong> con al menos <strong>10 días de anticipación</strong> a la fecha de término de su plazo o fecha de corte mensual. De no recibir dicha notificación en tiempo y forma, el plan se renovará de manera automática para asegurar la continuidad ininterrumpida de los servicios digitales y la captación de clientes de su negocio.</p>
+
+                    <p className="font-black text-black mt-6 mb-1">4. LÍMITE Y DESLINDE DE RESPONSABILIDAD (USO E IMPACTO COMERCIAL)</p>
+                    <p className="mb-4">ViOs Code provee exclusivamente infraestructura, código y herramientas digitales. <strong>ViOs Code se deslinda expresa y totalmente de cualquier responsabilidad legal, médica, penal, civil o mercantil</strong> que pudiera derivar del giro comercial, las prácticas operativas, los productos vendidos o los servicios ofrecidos por El Cliente a sus consumidores finales. En caso de suscitarse problemas operativos tales como (de manera enunciativa mas no limitativa): reacciones alérgicas por procedimientos estéticos o tatuajes, intoxicaciones, accidentes físicos dentro de las instalaciones del cliente, o disputas legales por la calidad o incumplimiento del servicio brindado por El Cliente, la responsabilidad recaerá única y exclusivamente sobre El Cliente. ViOs Code no garantiza un margen específico de rentabilidad, siendo el éxito o fracaso comercial responsabilidad íntegra de la gestión administrativa de El Cliente.</p>
+
+                    <p className="font-black text-black mt-6 mb-1">5. PROPIEDAD INTELECTUAL Y MARCAS REGISTRADAS</p>
+                    <p className="mb-4">El Cliente declara y garantiza que es el titular legítimo o posee las licencias legales correspondientes de todas las marcas, logotipos, imágenes comerciales y textos que decida exhibir dentro del ecosistema digital provisto por ViOs Code. El Proveedor se deslinda de cualquier disputa legal, uso indebido de derechos de autor, plagio o infracción de propiedad intelectual de terceros cometida o cargada por El Cliente en sus respectivas plataformas y menús digitales.</p>
+
+                    <p className="font-black text-black mt-6 mb-1">6. DISPONIBILIDAD DE LOS SERVIDORES</p>
+                    <p className="mb-4">El Proveedor realizará los mejores esfuerzos de ingeniería para mantener la plataforma operativa las 24 horas del día. Sin embargo, no asume responsabilidad directa por interrupciones del servicio derivadas de caídas a nivel global en servidores de terceros que sostienen el ecosistema (tales como AWS, Vercel, Supabase o Stripe), mantenimientos programados informados previamente, o causas de fuerza mayor (desastres naturales, cortes masivos de internet).</p>
                   </div>
                   <label className="flex items-center gap-4 p-4 border rounded-2xl cursor-pointer hover:bg-zinc-50 transition-colors">
                     <input type="checkbox" className="w-5 h-5 accent-black" id="checkContrato" />
-                    <span className="text-sm font-bold">Acepto los términos, condiciones y el periodo de permanencia.</span>
+                    <span className="text-sm font-bold">He leído todo el contrato y acepto los términos, el deslinde de responsabilidad y el periodo de permanencia.</span>
                   </label>
                   <button onClick={() => setPasoCompra(3)} className="w-full bg-black text-white py-5 rounded-2xl font-black uppercase tracking-widest text-sm mt-6 hover:bg-zinc-800 transition-colors">
                     Aceptar y Proceder al Pago
