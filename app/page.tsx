@@ -21,7 +21,7 @@ export default function ViosCodeMatriz() {
   
   // ⚙️ ESTADOS PARA EL FLUJO DE COMPRA
   const [planSeleccionado, setPlanSeleccionado] = useState<any>(null);
-  const [pasoCompra, setPasoCompra] = useState(0); // 0: Cerrado, 1: Datos, 2: Contrato, 3: Stripe
+  const [pasoCompra, setPasoCompra] = useState(0); 
   const [datosCliente, setDatosCliente] = useState({
     nombre: '', email: '', nombreNegocio: '', telefono: '', duracionContrato: '3'
   });
@@ -32,9 +32,8 @@ export default function ViosCodeMatriz() {
   const [adminPassword, setAdminPassword] = useState('');
   const [cargandoAdmin, setCargandoAdmin] = useState(false);
   const [errorAdmin, setErrorAdmin] = useState('');
-  const [isCrearCuenta, setIsCrearCuenta] = useState(false); // 👈 NUEVO: Estado para crear contraseña
+  const [isCrearCuenta, setIsCrearCuenta] = useState(false); 
 
-  // 💎 PLANES OFICIALES (Basados en tu PDF de Escalamiento)
   const planes = [
     { id: 'flex', nombre: 'Plan Flex', precio: 100, color: 'border-zinc-700', desc: 'Toda la base tecnológica activa y cobrando por ti (Esquema por comisión).' },
     { id: 'basico', nombre: 'Plan Básico', precio: 200, color: 'border-zinc-500', desc: 'Toda la base tecnológica + 3 días de pautas publicitarias en Meta Ads al mes.' },
@@ -56,13 +55,12 @@ export default function ViosCodeMatriz() {
 
   const URL_VIRTUAL_PLANET = "https://www.viosvirtualplanet.com/";
 
-  // Función para iniciar Stripe Checkout
   const manejarPagoStripe = async () => {
     console.log("Iniciando suscripción recurrente para:", planSeleccionado.nombre);
     alert("Redirigiendo a la pasarela segura de Stripe para pago recurrente...");
   };
 
-  // 🔐 Función para login / registro del CEO
+  // 🔐 Función para login actualizada (MODIFICADA PARA MOSTRAR EL ERROR REAL)
   const manejarAccesoGodMode = async (e: React.FormEvent) => {
     e.preventDefault();
     setCargandoAdmin(true);
@@ -70,27 +68,26 @@ export default function ViosCodeMatriz() {
 
     try {
       if (isCrearCuenta) {
-        // Modo Creación de Contraseña
         const { data, error } = await supabase.auth.signUp({
           email: adminEmail,
           password: adminPassword,
         });
         if (error) throw error;
         alert("Contraseña maestra guardada en la matriz con éxito. Por favor inicia sesión.");
-        setIsCrearCuenta(false); // Regresa al modo login
+        setIsCrearCuenta(false); 
         setAdminPassword('');
       } else {
-        // Modo Login Normal
         const { data, error } = await supabase.auth.signInWithPassword({
           email: adminEmail,
           password: adminPassword,
         });
         if (error) throw error;
-        router.push('/god-mode'); // Acceso concedido
+        router.push('/god-mode'); 
       }
     } catch (error: any) {
       console.error('Error de acceso:', error.message);
-      setErrorAdmin(isCrearCuenta ? 'Error al crear la llave maestra. Verifica la consola.' : 'Credenciales denegadas. Acceso restringido.');
+      // 🔥 AHORA SÍ: IMPRIMIMOS EL ERROR REAL DE SUPABASE EN PANTALLA
+      setErrorAdmin(`Error de Matriz: ${error.message}`);
     } finally {
       setCargandoAdmin(false);
     }
@@ -226,7 +223,7 @@ export default function ViosCodeMatriz() {
           </div>
         </section>
 
-        {/* 🌌 SECCIÓN 3: LA ARQUITECTURA (6 Tarjetas Restauradas) */}
+        {/* 🌌 SECCIÓN 3: LA ARQUITECTURA */}
         <section className="px-6 max-w-6xl mx-auto mb-32">
           <div className="text-center mb-16">
             <h2 className="font-montserrat text-3xl md:text-5xl font-black mb-4 text-black uppercase tracking-tighter">La Arquitectura del Multiverso</h2>
@@ -236,7 +233,6 @@ export default function ViosCodeMatriz() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* 1. ViOs Metaverso */}
             <Link href="https://www.viosmetaverse.com/" target="_blank" className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm block cursor-pointer">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
               <div className="text-5xl mb-6">🌐</div>
@@ -244,7 +240,6 @@ export default function ViosCodeMatriz() {
               <p className="text-gray-600 text-sm">El portal principal. La interfaz de conexión interactiva que unifica nuestra tecnología.</p>
             </Link>
 
-            {/* 2. Virtual Universe */}
             <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
               <div className="text-5xl mb-6">🌌</div>
@@ -252,7 +247,6 @@ export default function ViosCodeMatriz() {
               <p className="text-gray-600 text-sm">La red maestra. El contenedor global que aloja todos nuestros ecosistemas y tecnologías.</p>
             </div>
 
-            {/* 3. Virtual Planet (Con vínculo actualizado) */}
             <Link href={URL_VIRTUAL_PLANET} target="_blank" className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-[#d4af37] hover:shadow-xl transition-all relative overflow-hidden group shadow-sm">
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#d4af37]/10 rounded-full blur-3xl group-hover:bg-[#d4af37]/20 transition-all"></div>
               <div className="text-5xl mb-6">🪐</div>
@@ -260,7 +254,6 @@ export default function ViosCodeMatriz() {
               <p className="text-gray-600 text-sm">Entornos globales divididos por industrias. Explora el ecosistema ahora.</p>
             </Link>
 
-            {/* 4. Virtual Metra (Sin el botón) */}
             <div className="bg-white border border-[#d4af37]/30 p-8 rounded-3xl hover:border-[#d4af37] transition-all relative overflow-hidden group shadow-[0_0_30px_rgba(212,175,55,0.1)]">
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#d4af37]/10 rounded-full blur-3xl group-hover:bg-[#d4af37]/20 transition-all"></div>
               <div className="text-5xl mb-6">🏙️</div>
@@ -268,7 +261,6 @@ export default function ViosCodeMatriz() {
               <p className="text-gray-700 text-sm">Proyectos locales y específicos. El hogar de desarrollos inmersivos de alto nivel.</p>
             </div>
 
-            {/* 5. Virtual Social */}
             <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
               <div className="text-5xl mb-6">🤝</div>
@@ -276,7 +268,6 @@ export default function ViosCodeMatriz() {
               <p className="text-gray-600 text-sm">El núcleo de la comunidad. Plataformas interactivas para conectar en tiempo real.</p>
             </div>
 
-            {/* 6. Virtual Nomad */}
             <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
               <div className="text-5xl mb-6">🌍</div>
@@ -286,7 +277,7 @@ export default function ViosCodeMatriz() {
           </div>
         </section>
 
-        {/* 💎 SECCIÓN 4: PLANES DE SUSCRIPCIÓN (ACTUALIZADOS CON TU PDF) */}
+        {/* 💎 SECCIÓN 4: PLANES DE SUSCRIPCIÓN */}
         <section id="planes" className="bg-zinc-950 py-24 px-6">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
@@ -294,7 +285,6 @@ export default function ViosCodeMatriz() {
               <p className="text-zinc-400 tracking-widest uppercase font-bold text-sm">Escoge tu nivel de inmersión en el ecosistema</p>
             </div>
 
-            {/* GRID PARA LOS 6 PLANES (Responsivo: 1 columna en móvil, 2 en tablet, 3 en escritorio) */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {planes.map((plan) => (
                 <div key={plan.id} className={`bg-zinc-900 border ${plan.color} p-8 rounded-[40px] flex flex-col justify-between hover:scale-105 transition-all duration-500 group`}>
@@ -316,7 +306,7 @@ export default function ViosCodeMatriz() {
         </section>
       </main>
 
-      {/* 🔐 BOTÓN GOD MODE (Invisible hasta hacer hover) */}
+      {/* 🔐 BOTÓN GOD MODE */}
       <button 
         onClick={() => {setModalAdminAbierto(true); setIsCrearCuenta(false);}}
         className="fixed bottom-6 right-6 z-40 bg-zinc-900 text-zinc-500 p-3 rounded-full opacity-20 hover:opacity-100 hover:text-cyan-400 hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300"
