@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 import SensorTrafico from './components/SensorTrafico';
 import { 
@@ -17,7 +16,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default function ViosCodeMatriz() {
   const [idioma, setIdioma] = useState('es');
-  const router = useRouter();
   
   // ⚙️ ESTADOS PARA EL FLUJO DE COMPRA
   const [planSeleccionado, setPlanSeleccionado] = useState<any>(null);
@@ -28,7 +26,7 @@ export default function ViosCodeMatriz() {
 
   // 🔐 ESTADOS PARA GOD MODE ACCESS
   const [modalAdminAbierto, setModalAdminAbierto] = useState(false);
-  const [adminEmail, setAdminEmail] = useState('osorioalejandro21777@gmail.com');
+  const [adminEmail, setAdminEmail] = useState('xkript@hotmail.com'); // 👈 RESTAURADO A TU CORREO CORRECTO
   const [adminPassword, setAdminPassword] = useState('');
   const [cargandoAdmin, setCargandoAdmin] = useState(false);
   const [errorAdmin, setErrorAdmin] = useState('');
@@ -55,7 +53,7 @@ export default function ViosCodeMatriz() {
 
   const URL_VIRTUAL_PLANET = "https://www.viosvirtualplanet.com/";
 
-  // 💳 LÓGICA DE COBRO CONECTADA A LA NUEVA API
+  // 💳 LÓGICA DE COBRO
   const manejarPagoStripe = async () => {
     try {
       console.log("Conectando con la bóveda para suscripción:", planSeleccionado.nombre);
@@ -64,7 +62,7 @@ export default function ViosCodeMatriz() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          gateway: 'vios-subscription', // 👈 ESTO ES CLAVE PARA ACTIVAR LA RUTA 3 EN TU BACKEND
+          gateway: 'vios-subscription', 
           planName: planSeleccionado.nombre,
           amount: planSeleccionado.precio,
           email: datosCliente.email,
@@ -106,7 +104,9 @@ export default function ViosCodeMatriz() {
           password: adminPassword,
         });
         if (error) throw error;
-        router.push('/god-mode'); 
+        
+        // 👈 RUTA ABSOLUTA FORZADA A PRODUCCIÓN
+        window.location.href = 'https://vioscode.io/god-mode'; 
       }
     } catch (error: any) {
       console.error('Error de acceso:', error.message);
