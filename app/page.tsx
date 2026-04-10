@@ -32,12 +32,16 @@ export default function ViosCodeMatriz() {
   const [adminPassword, setAdminPassword] = useState('');
   const [cargandoAdmin, setCargandoAdmin] = useState(false);
   const [errorAdmin, setErrorAdmin] = useState('');
+  const [isCrearCuenta, setIsCrearCuenta] = useState(false); // 👈 NUEVO: Estado para crear contraseña
 
+  // 💎 PLANES OFICIALES (Basados en tu PDF de Escalamiento)
   const planes = [
-    { id: 'clasico', nombre: 'Clásico', precio: 999, color: 'border-zinc-200', desc: 'Ideal para negocios locales iniciando su digitalización.' },
-    { id: 'premium', nombre: 'Premium', precio: 1999, color: 'border-[#d4af37]/40', desc: 'Para empresas que buscan presencia digital de alto impacto.' },
-    { id: 'gold', nombre: 'Gold', precio: 3999, color: 'border-cyan-400/40', desc: 'Ecosistema completo con herramientas de análisis avanzado.' },
-    { id: 'diamond', nombre: 'Diamond', precio: 7999, color: 'border-fuchsia-500/40', desc: 'Solución empresarial total con soporte prioritario 24/7.' },
+    { id: 'flex', nombre: 'Plan Flex', precio: 100, color: 'border-zinc-700', desc: 'Toda la base tecnológica activa y cobrando por ti (Esquema por comisión).' },
+    { id: 'basico', nombre: 'Plan Básico', precio: 200, color: 'border-zinc-500', desc: 'Toda la base tecnológica + 3 días de pautas publicitarias en Meta Ads al mes.' },
+    { id: 'clasico', nombre: 'Plan Clásico', precio: 499, color: 'border-zinc-200', desc: '0% Comisión. Incluye WhatsApp bot, Panel BI + 3 días de pautas en Meta Ads al mes.' },
+    { id: 'premium', nombre: 'Plan Premium', precio: 599, color: 'border-[#d4af37]/40', desc: '0% Comisión. WhatsApp bot, Panel BI + 5 días de pautas en Meta Ads de alto valor.' },
+    { id: 'gold', nombre: 'Plan Gold', precio: 799, color: 'border-cyan-400/40', desc: '0% Comisión. Toda la automatización + 15 días de pautas en Meta Ads.' },
+    { id: 'diamond', nombre: 'Plan Diamond', precio: 999, color: 'border-fuchsia-500/40', desc: '0% Comisión. Toda la automatización + 20 días de pautas en Meta Ads. El ecosistema definitivo.' },
   ];
 
   const BotonIdioma = () => (
@@ -58,26 +62,35 @@ export default function ViosCodeMatriz() {
     alert("Redirigiendo a la pasarela segura de Stripe para pago recurrente...");
   };
 
-  // Función para login maestro (azteca777)
-  const manejarLoginGodMode = async (e: React.FormEvent) => {
+  // 🔐 Función para login / registro del CEO
+  const manejarAccesoGodMode = async (e: React.FormEvent) => {
     e.preventDefault();
     setCargandoAdmin(true);
     setErrorAdmin('');
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: adminEmail,
-        password: adminPassword,
-      });
-
-      if (error) throw error;
-
-      // Si el login es exitoso, abrimos el God Mode
-      router.push('/god-mode');
-      
+      if (isCrearCuenta) {
+        // Modo Creación de Contraseña
+        const { data, error } = await supabase.auth.signUp({
+          email: adminEmail,
+          password: adminPassword,
+        });
+        if (error) throw error;
+        alert("Contraseña maestra guardada en la matriz con éxito. Por favor inicia sesión.");
+        setIsCrearCuenta(false); // Regresa al modo login
+        setAdminPassword('');
+      } else {
+        // Modo Login Normal
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: adminEmail,
+          password: adminPassword,
+        });
+        if (error) throw error;
+        router.push('/god-mode'); // Acceso concedido
+      }
     } catch (error: any) {
       console.error('Error de acceso:', error.message);
-      setErrorAdmin('Credenciales denegadas. Acceso restringido.');
+      setErrorAdmin(isCrearCuenta ? 'Error al crear la llave maestra. Verifica la consola.' : 'Credenciales denegadas. Acceso restringido.');
     } finally {
       setCargandoAdmin(false);
     }
@@ -197,35 +210,75 @@ export default function ViosCodeMatriz() {
 
         {/* 📊 SECCIÓN 2: PITCH COMERCIAL */}
         <section className="px-4 md:px-8 w-full max-w-[95%] 2xl:max-w-[90%] mx-auto mb-32 flex flex-col items-center">
-          <div className="w-full bg-white p-2 md:p-3 rounded-3xl border border-gray-200 shadow-[0_0_40px_rgba(212,175,55,0.1)] relative group">
+          <div className="w-full flex items-center justify-between mb-8">
+            <h2 className="font-montserrat text-2xl md:text-4xl font-bold tracking-wide text-black">
+              {idioma === 'es' ? 'Nuestro Modelo de Negocio' : 'Our Business Model'}
+            </h2>
+            <div className="h-px bg-gradient-to-r from-gray-300 to-transparent flex-grow ml-8"></div>
+          </div>
+          <div className="w-full bg-white p-2 md:p-3 rounded-3xl border border-gray-200 shadow-[0_0_40px_rgba(212,175,55,0.1)] relative group transition-all duration-300 hover:shadow-[0_0_60px_rgba(212,175,55,0.2)]">
             <iframe 
               src={idioma === 'es' ? "https://gamma.app/embed/qckwr0gsgl9a8gv" : "https://gamma.app/embed/1smkc5wzbe09g48"} 
-              className="w-full h-[550px] md:h-[800px] lg:h-[850px] rounded-2xl bg-white border border-gray-100" 
+              className="w-full h-[550px] md:h-[800px] lg:h-[850px] rounded-2xl relative z-10 bg-white transition-all duration-500 border border-gray-100" 
               allowFullScreen 
+              title={idioma === 'es' ? "El Futuro del Comercio: Tu Negocio en la Siguiente Dimensión" : "The Future of Commerce: Your Business in the Next Dimension"}
             ></iframe>
           </div>
         </section>
 
-        {/* 🌌 SECCIÓN 3: LA ARQUITECTURA */}
+        {/* 🌌 SECCIÓN 3: LA ARQUITECTURA (6 Tarjetas Restauradas) */}
         <section className="px-6 max-w-6xl mx-auto mb-32">
           <div className="text-center mb-16">
             <h2 className="font-montserrat text-3xl md:text-5xl font-black mb-4 text-black uppercase tracking-tighter">La Arquitectura del Multiverso</h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              {idioma === 'es' ? 'ViOs Code es el núcleo de un sistema escalable diseñado para conquistar el mercado digital paso a paso.' : 'ViOs Code is the core of a scalable system designed to conquer the digital market step by step.'}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* 1. ViOs Metaverso */}
+            <Link href="https://www.viosmetaverse.com/" target="_blank" className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm block cursor-pointer">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
+              <div className="text-5xl mb-6">🌐</div>
+              <h3 className="font-montserrat text-2xl font-bold text-black mb-2">ViOs Metaverso</h3>
+              <p className="text-gray-600 text-sm">El portal principal. La interfaz de conexión interactiva que unifica nuestra tecnología.</p>
+            </Link>
+
+            {/* 2. Virtual Universe */}
+            <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
+              <div className="text-5xl mb-6">🌌</div>
+              <h3 className="font-montserrat text-2xl font-bold text-black mb-2">Virtual Universe</h3>
+              <p className="text-gray-600 text-sm">La red maestra. El contenedor global que aloja todos nuestros ecosistemas y tecnologías.</p>
+            </div>
+
+            {/* 3. Virtual Planet (Con vínculo actualizado) */}
             <Link href={URL_VIRTUAL_PLANET} target="_blank" className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-[#d4af37] hover:shadow-xl transition-all relative overflow-hidden group shadow-sm">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#d4af37]/10 rounded-full blur-3xl group-hover:bg-[#d4af37]/20 transition-all"></div>
               <div className="text-5xl mb-6">🪐</div>
               <h3 className="font-montserrat text-2xl font-bold text-black mb-2">Virtual Planet</h3>
               <p className="text-gray-600 text-sm">Entornos globales divididos por industrias. Explora el ecosistema ahora.</p>
             </Link>
 
-            <div className="bg-white border border-gray-100 p-8 rounded-3xl relative overflow-hidden shadow-sm">
+            {/* 4. Virtual Metra (Sin el botón) */}
+            <div className="bg-white border border-[#d4af37]/30 p-8 rounded-3xl hover:border-[#d4af37] transition-all relative overflow-hidden group shadow-[0_0_30px_rgba(212,175,55,0.1)]">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#d4af37]/10 rounded-full blur-3xl group-hover:bg-[#d4af37]/20 transition-all"></div>
               <div className="text-5xl mb-6">🏙️</div>
-              <h3 className="font-montserrat text-2xl font-bold text-black mb-2">Virtual Metra</h3>
-              <p className="text-gray-600 text-sm">Proyectos locales y específicos. El hogar de desarrollos inmersivos de alto nivel.</p>
+              <h3 className="font-montserrat text-2xl font-bold text-[#d4af37] mb-2">Virtual Metra</h3>
+              <p className="text-gray-700 text-sm">Proyectos locales y específicos. El hogar de desarrollos inmersivos de alto nivel.</p>
             </div>
 
-            <div className="bg-white border border-gray-100 p-8 rounded-3xl relative overflow-hidden shadow-sm">
+            {/* 5. Virtual Social */}
+            <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
+              <div className="text-5xl mb-6">🤝</div>
+              <h3 className="font-montserrat text-2xl font-bold text-black mb-2">Virtual Social</h3>
+              <p className="text-gray-600 text-sm">El núcleo de la comunidad. Plataformas interactivas para conectar en tiempo real.</p>
+            </div>
+
+            {/* 6. Virtual Nomad */}
+            <div className="bg-white border border-gray-100 p-8 rounded-3xl hover:border-gray-200 hover:shadow-lg transition-all relative overflow-hidden group shadow-sm">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full blur-3xl group-hover:bg-gray-200 transition-all"></div>
               <div className="text-5xl mb-6">🌍</div>
               <h3 className="font-montserrat text-2xl font-bold text-black mb-2">Virtual Nomad</h3>
               <p className="text-gray-600 text-sm">El puente físico-digital. Soluciones para ciudadanos del mundo que viven sin fronteras.</p>
@@ -233,7 +286,7 @@ export default function ViosCodeMatriz() {
           </div>
         </section>
 
-        {/* 💎 SECCIÓN 4: PLANES DE SUSCRIPCIÓN */}
+        {/* 💎 SECCIÓN 4: PLANES DE SUSCRIPCIÓN (ACTUALIZADOS CON TU PDF) */}
         <section id="planes" className="bg-zinc-950 py-24 px-6">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
@@ -241,7 +294,8 @@ export default function ViosCodeMatriz() {
               <p className="text-zinc-400 tracking-widest uppercase font-bold text-sm">Escoge tu nivel de inmersión en el ecosistema</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* GRID PARA LOS 6 PLANES (Responsivo: 1 columna en móvil, 2 en tablet, 3 en escritorio) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {planes.map((plan) => (
                 <div key={plan.id} className={`bg-zinc-900 border ${plan.color} p-8 rounded-[40px] flex flex-col justify-between hover:scale-105 transition-all duration-500 group`}>
                   <div>
@@ -264,7 +318,7 @@ export default function ViosCodeMatriz() {
 
       {/* 🔐 BOTÓN GOD MODE (Invisible hasta hacer hover) */}
       <button 
-        onClick={() => setModalAdminAbierto(true)}
+        onClick={() => {setModalAdminAbierto(true); setIsCrearCuenta(false);}}
         className="fixed bottom-6 right-6 z-40 bg-zinc-900 text-zinc-500 p-3 rounded-full opacity-20 hover:opacity-100 hover:text-cyan-400 hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all duration-300"
         title="Terminal de Mando"
       >
@@ -314,9 +368,9 @@ export default function ViosCodeMatriz() {
                 <div>
                   <div className="bg-zinc-50 p-6 rounded-2xl border mb-6 text-xs leading-relaxed text-zinc-600 h-64 overflow-y-scroll">
                     <h4 className="font-black text-black mb-4 uppercase">CONTRATO DE SERVICIOS DIGITALES - VIOS CODE</h4>
-                    <p className="mb-4">Este contrato vincula a <strong>ViOs Code</strong> y <strong>{datosCliente.nombreNegocio}</strong> por un periodo forzoso de {datosCliente.duracionContrato} meses...</p>
+                    <p className="mb-4">Este contrato vincula a <strong>ViOs Code</strong> y <strong>{datosCliente.nombreNegocio}</strong> por un periodo forzoso de {datosCliente.duracionContrato} meses.</p>
                     <p className="mb-4">1. OBJETO: El cliente adquiere una membresía tipo {planSeleccionado.nombre} con cobro recurrente automático vía Stripe.</p>
-                    <p className="mb-4">2. CANCELACIONES: No se permiten cancelaciones antes de concluir el periodo de {datosCliente.duracionContrato} meses.</p>
+                    <p className="mb-4">2. CANCELACIONES: No se permiten cancelaciones antes de concluir el periodo de {datosCliente.duracionContrato} meses. Aplican renovaciones automáticas.</p>
                     <p>3. FACTURACIÓN: Stripe generará automáticamente la factura fiscal a los datos proporcionados.</p>
                   </div>
                   <label className="flex items-center gap-4 p-4 border rounded-2xl cursor-pointer hover:bg-zinc-50 transition-colors">
@@ -347,7 +401,7 @@ export default function ViosCodeMatriz() {
         </div>
       )}
 
-      {/* 🔐 MODAL GOD MODE LOGIN */}
+      {/* 🔐 MODAL GOD MODE LOGIN / CREAR PASSWORD */}
       {modalAdminAbierto && (
         <div className="fixed inset-0 z-[200] bg-zinc-950/90 backdrop-blur-md flex items-center justify-center p-4">
           <div className="bg-zinc-900 border border-zinc-800 w-full max-w-sm rounded-[30px] p-8 shadow-[0_0_50px_rgba(6,182,212,0.15)] relative overflow-hidden">
@@ -364,10 +418,14 @@ export default function ViosCodeMatriz() {
               </div>
             </div>
             
-            <h2 className="text-center text-white font-black uppercase tracking-widest text-xl mb-1">Terminal de Mando</h2>
-            <p className="text-center text-zinc-500 text-[10px] font-bold tracking-[0.2em] uppercase mb-8">Acceso Restringido • azteca777</p>
+            <h2 className="text-center text-white font-black uppercase tracking-widest text-xl mb-1">
+              {isCrearCuenta ? 'Crear Llave Maestra' : 'Terminal de Mando'}
+            </h2>
+            <p className="text-center text-zinc-500 text-[10px] font-bold tracking-[0.2em] uppercase mb-8">
+              Acceso Restringido • azteca777
+            </p>
 
-            <form onSubmit={manejarLoginGodMode} className="space-y-4">
+            <form onSubmit={manejarAccesoGodMode} className="space-y-4">
               <div>
                 <input 
                   type="email" 
@@ -379,7 +437,7 @@ export default function ViosCodeMatriz() {
               <div>
                 <input 
                   type="password" 
-                  placeholder="Contraseña de la Matriz"
+                  placeholder={isCrearCuenta ? "Ingresa tu nueva contraseña" : "Contraseña de la Matriz"}
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
                   className="w-full bg-zinc-950 border border-zinc-800 text-white text-sm p-4 rounded-xl outline-none focus:border-cyan-400 transition-colors placeholder:text-zinc-700"
@@ -394,9 +452,19 @@ export default function ViosCodeMatriz() {
                 disabled={cargandoAdmin}
                 className="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest text-xs py-4 rounded-xl mt-4 transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] disabled:opacity-50"
               >
-                {cargandoAdmin ? 'Autenticando...' : 'Iniciar Protocolo'}
+                {cargandoAdmin ? 'Procesando...' : (isCrearCuenta ? 'Guardar en Base de Datos' : 'Iniciar Protocolo')}
               </button>
             </form>
+
+            <div className="mt-6 text-center">
+              <button 
+                type="button"
+                onClick={() => {setIsCrearCuenta(!isCrearCuenta); setErrorAdmin(''); setAdminPassword('');}}
+                className="text-[10px] font-bold text-zinc-500 hover:text-cyan-400 uppercase tracking-widest transition-colors"
+              >
+                {isCrearCuenta ? 'Volver al Login' : '¿Primera vez? Crear clave de acceso'}
+              </button>
+            </div>
           </div>
         </div>
       )}
