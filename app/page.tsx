@@ -55,9 +55,34 @@ export default function ViosCodeMatriz() {
 
   const URL_VIRTUAL_PLANET = "https://www.viosvirtualplanet.com/";
 
+  // 💳 LÓGICA DE COBRO CONECTADA A LA NUEVA API
   const manejarPagoStripe = async () => {
-    console.log("Iniciando suscripción recurrente para:", planSeleccionado.nombre);
-    alert("Redirigiendo a la pasarela segura de Stripe para pago recurrente...");
+    try {
+      console.log("Conectando con la bóveda para suscripción:", planSeleccionado.nombre);
+      
+      const respuesta = await fetch('/api/checkout', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gateway: 'vios-subscription', // 👈 ESTO ES CLAVE PARA ACTIVAR LA RUTA 3 EN TU BACKEND
+          planName: planSeleccionado.nombre,
+          amount: planSeleccionado.precio,
+          email: datosCliente.email,
+          nombreNegocio: datosCliente.nombreNegocio,
+        }),
+      });
+
+      const datos = await respuesta.json();
+
+      if (datos.urlPago) { 
+        window.location.href = datos.urlPago; 
+      } else {
+        alert("Hubo un error al generar el cobro: " + datos.error);
+      }
+    } catch (error) {
+      console.error("Error de conexión:", error);
+      alert("No se pudo conectar con la pasarela de pagos.");
+    }
   };
 
   const manejarAccesoGodMode = async (e: React.FormEvent) => {

@@ -21,11 +21,55 @@ export async function OPTIONS() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { carrito, tienda, gateway = 'mercadopago' } = body; 
+    // 💡 Aceptamos nuevas variables que vienen del frontend de tu agencia
+    const { carrito, tienda, gateway = 'mercadopago', planName, amount, email, nombreNegocio } = body; 
 
-    // 🧮 CALCULAR TOTALES Y TU COMISIÓN (Ejemplo: 10% para ViOs Code)
+    // ==========================================
+    // 🏢 RUTA 3: SUSCRIPCIONES SAAS (TU AGENCIA)
+    // ==========================================
+    if (gateway === 'vios-subscription') {
+      console.log(`Iniciando suscripción: ${planName} para ${nombreNegocio}`);
+      
+      // Asegúrate de que esta variable se llame exactamente como la tienes en tu .env.local
+      // En tu captura vi que decía STRIPE_SECRET_KEY_TEST, así que uso esa por ahora.
+      const stripeSaaS = new Stripe(process.env.STRIPE_SECRET_KEY_TEST as string, {
+        apiVersion: '2023-10-16',
+      });
+
+      const session = await stripeSaaS.checkout.sessions.create({
+        payment_method_types: ['card'],
+        customer_email: email, 
+        line_items: [
+          {
+            price_data: {
+              currency: 'mxn',
+              product_data: {
+                name: `Membresía ${planName} - ViOs Code`,
+                description: `Suscripción SaaS para ${nombreNegocio}`,
+              },
+              unit_amount: amount * 100, // Centavos
+              recurring: {
+                interval: 'month', // 👈 Cobro mensual
+              },
+            },
+            quantity: 1,
+          },
+        ],
+        mode: 'subscription', // 👈 Modo suscripción
+        success_url: `https://vioscode.io/?pago=exitoso`,
+        cancel_url: `https://vioscode.io/?pago=cancelado`,
+      });
+
+      return NextResponse.json({ urlPago: session.url }, { headers: corsHeaders });
+    }
+
+    // ==========================================
+    // LÓGICA ORIGINAL PARA CLIENTES (VIRTUAL LUXURY)
+    // ==========================================
+
+    // 🧮 CALCULAR TOTALES Y TU COMISIÓN
     const PORCENTAJE_COMISION = 0.10;
-    const totalVenta = carrito.reduce((acc: number, item: any) => acc + (item.precio * item.cantidad), 0);
+    const totalVenta = carrito?.reduce((acc: number, item: any) => acc + (item.precio * item.cantidad), 0) || 0;
     const comisionCalculada = totalVenta * PORCENTAJE_COMISION;
 
     // 💾 GUARDAR REGISTRO EN SUPABASE ANTES DE COBRAR
@@ -38,19 +82,16 @@ export async function POST(request: Request) {
           metodo_pago: gateway,
           comision_vios: comisionCalculada,
           estado: 'intento_de_pago', 
-          carrito: carrito // ✅ CORREGIDO: Ahora se llama 'carrito' para que los Rayos X lo detecten
+          carrito: carrito
         }
       ])
       .select()
       .single();
 
-    if (supabaseError) {
-      console.error("Error guardando en Supabase:", supabaseError);
-      // No detenemos el pago si falla la base de datos
-    }
+    if (supabaseError) console.error("Error guardando en Supabase:", supabaseError);
 
     // ==========================================
-    // 🌍 RUTA 1: MOTOR GLOBAL (STRIPE)
+    // 🌍 RUTA 1: MOTOR GLOBAL (STRIPE - PAGO ÚNICO)
     // ==========================================
     if (gateway === 'stripe') {
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY_TEST as string, {
@@ -70,8 +111,7 @@ export async function POST(request: Request) {
         payment_method_types: ['card'],
         line_items: lineItems,
         mode: 'payment',
-        client_reference_id: registroVenta?.id, // 👈 Se vincula el ID de Supabase
-        // Redirecciones dinámicas según la tienda
+        client_reference_id: registroVenta?.id, 
         success_url: `https://virtualuxurytulum.com/${tienda.toLowerCase()}?pago=exitoso`,
         cancel_url: `https://virtualuxurytulum.com/${tienda.toLowerCase()}?pago=cancelado`,
       });
@@ -84,14 +124,12 @@ export async function POST(request: Request) {
     // ==========================================
     let tokenActivo = '';
     
-    // ✅ CORREGIDO: El Switch ahora reconoce los nuevos nombres y los enruta a tu token.
-    // Cuando las marcas tengan sus propias cuentas de MP, aquí pondrás sus tokens.
     switch (tienda) {
       case 'LUKAS':
       case 'BERNARDITA':
       case 'MULATA':
       case 'OASIS':
-      case 'vios_test': // Lo dejamos por si haces pruebas manuales
+      case 'vios_test': 
         tokenActivo = process.env.MP_TOKEN_VIOS || ''; 
         break;
       default:
@@ -111,9 +149,8 @@ export async function POST(request: Request) {
     const result = await preference.create({
       body: {
         items: items,
-        external_reference: registroVenta?.id, // 👈 Se vincula el ID de Supabase
+        external_reference: registroVenta?.id, 
         back_urls: {
-          // Redirecciones dinámicas
           success: `https://virtualuxurytulum.com/${tienda.toLowerCase()}`,
           failure: `https://virtualuxurytulum.com/${tienda.toLowerCase()}`,
           pending: `https://virtualuxurytulum.com/${tienda.toLowerCase()}`,
