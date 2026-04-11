@@ -26,6 +26,8 @@ export default function ViosCodeMatriz() {
     nombre: '', email: '', nombreNegocio: '', telefono: '', duracionContrato: '3'
   });
 
+  const [codigoAcceso, setCodigoAcceso] = useState('');
+
   // 🔐 ESTADOS PARA GOD MODE ACCESS
   const [modalAdminAbierto, setModalAdminAbierto] = useState(false);
   const [adminEmail, setAdminEmail] = useState('xkript@hotmail.com');
@@ -431,7 +433,7 @@ export default function ViosCodeMatriz() {
             </div>
 
             <div className="p-8 max-h-[70vh] overflow-y-auto font-inter">
-              {pasoCompra === 1 && (
+             {pasoCompra === 1 && (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <input className="border p-4 rounded-xl outline-none focus:border-[#d4af37]" placeholder="Nombre Completo" onChange={(e) => setDatosCliente({...datosCliente, nombre: e.target.value})} />
@@ -447,8 +449,35 @@ export default function ViosCodeMatriz() {
                       <option value="12">12 Meses (Pago anual con descuento)</option>
                     </select>
                   </div>
-                  <button onClick={() => setPasoCompra(2)} className="w-full bg-black text-white py-5 rounded-2xl font-black uppercase tracking-widest text-sm mt-6 hover:bg-zinc-800 transition-colors">
-                    Continuar al Contrato
+
+                  {/* 🔐 CAMPO DE CÓDIGO DE INVITACIÓN */}
+                  <div className="pt-4 border-t border-gray-100 mt-4">
+                    <label className="text-xs font-black uppercase tracking-widest text-[#d4af37] mb-2 flex items-center gap-2">
+                      <Key className="w-4 h-4" /> Código de Invitación VIP
+                    </label>
+                    <input 
+                      className="w-full border-2 border-zinc-200 bg-zinc-50 p-4 rounded-xl outline-none focus:border-[#d4af37] font-mono text-center tracking-widest uppercase text-black font-bold placeholder:font-sans placeholder:tracking-normal placeholder:text-zinc-400 placeholder:font-normal placeholder:lowercase" 
+                      placeholder="Ingresa la llave de acceso proporcionada" 
+                      type="text" 
+                      onChange={(e) => setCodigoAcceso(e.target.value.toUpperCase())} 
+                    />
+                    <p className="text-[9px] text-zinc-400 mt-2 text-center uppercase tracking-widest">
+                      El acceso a ViOs Code está limitado a negocios pre-aprobados.
+                    </p>
+                  </div>
+
+                  <button 
+                    onClick={() => {
+                      // 🛑 LÓGICA DE BLOQUEO: Solo estos códigos dejarán pasar al cliente
+                      if (codigoAcceso === 'VIOS-2026' || codigoAcceso === 'TULUM-VIP') {
+                        setPasoCompra(2);
+                      } else {
+                        alert('❌ Acceso Denegado: Código de invitación inválido o expirado. Por favor, contacta a un asesor de ViOs Code para aplicar a nuestro ecosistema.');
+                      }
+                    }} 
+                    className="w-full bg-black text-white py-5 rounded-2xl font-black uppercase tracking-widest text-sm mt-6 hover:bg-zinc-800 transition-colors shadow-lg"
+                  >
+                    Validar Código y Continuar
                   </button>
                 </div>
               )}
