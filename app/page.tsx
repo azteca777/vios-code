@@ -185,8 +185,8 @@ export default function ViosCodeMatriz() {
         {/* 👤 SECCIÓN 1: LOGOS Y BIOGRAFÍA */}
         <section className="pt-36 px-6 max-w-7xl mx-auto flex flex-col items-center justify-center mb-24 relative">
           
-          <div className="w-full mb-16 flex flex-col items-center animate-[fadeIn_1s_ease-in-out]">
-            <h4 className="text-gray-400 uppercase tracking-widest text-xs md:text-sm font-bold mb-6 text-center">
+          <div className="w-full mb-20 flex flex-col items-center animate-[fadeIn_1s_ease-in-out]">
+            <h4 className="text-gray-400 uppercase tracking-widest text-xs md:text-sm font-bold mb-8 text-center">
               {idioma === 'es' ? 'Marcas que impulsan el ecosistema' : 'Brands powering the ecosystem'}
             </h4>
             
@@ -215,30 +215,31 @@ export default function ViosCodeMatriz() {
             </div>
           </div>
 
-          <div className="flex flex-col w-full animate-[fadeIn_1s_ease-in-out] mb-20">
-            <div className="flex flex-row items-center md:items-start gap-4 md:gap-20 lg:gap-32 w-full">
-              <div className="w-1/3 md:w-64 shrink-0 relative">
-                <img src="/tu_foto.jpeg" alt="Emmanuel Osorio" className="w-full h-auto rounded-2xl shadow-[0_0_90px_rgba(212,175,55,0.8)] border-2 border-[#d4af37]" />
+          {/* BIOS MÁS COMPACTAS */}
+          <div className="flex flex-col w-full animate-[fadeIn_1s_ease-in-out] mb-16">
+            <div className="flex flex-row items-center md:items-start gap-4 md:gap-12 w-full justify-center">
+              <div className="w-1/4 md:w-40 shrink-0 relative">
+                <img src="/tu_foto.jpeg" alt="Emmanuel Osorio" className="w-full h-auto rounded-2xl shadow-[0_0_50px_rgba(212,175,55,0.4)] border border-[#d4af37]" />
               </div>
               
-              <div className="w-2/3 md:w-auto md:flex-1 flex flex-col gap-2 md:gap-4 text-left text-black">
-                <h2 className="font-montserrat text-xl md:text-6xl font-black tracking-tight leading-tight">
+              <div className="w-2/3 md:w-auto flex flex-col gap-1 md:gap-2 text-left text-black max-w-xl">
+                <h2 className="font-montserrat text-lg md:text-4xl font-black tracking-tight leading-tight">
                   {idioma === 'es' ? 'Redefiniendo la' : 'Redefining the'} <br className="hidden md:block" />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 to-gray-600 block md:inline">
                     {idioma === 'es' ? 'Realidad Digital.' : 'Digital Reality.'}
                   </span>
                 </h2>
                 
-                <div className="flex flex-col mt-1 md:mt-0">
-                  <h3 className="font-montserrat text-[10px] md:text-xl tracking-widest font-bold uppercase text-gray-800">
+                <div className="flex flex-col mt-1">
+                  <h3 className="font-montserrat text-[9px] md:text-sm tracking-widest font-bold uppercase text-gray-800">
                     Emmanuel Alejandro Osorio Maza— CEO & Founder
                   </h3>
-                  <h2 className="font-montserrat text-[9px] md:text-sm tracking-widest font-semibold uppercase text-gray-500 mt-1">
+                  <h2 className="font-montserrat text-[8px] md:text-xs tracking-widest font-semibold uppercase text-gray-500 mt-1">
                     Quintana Roo
                   </h2>
                 </div>
                 
-                <p className="text-gray-700 text-xs md:text-lg leading-relaxed md:leading-relaxed max-w-2xl mt-1 md:mt-4 font-normal text-left">
+                <p className="text-gray-700 text-[10px] md:text-sm leading-relaxed max-w-xl mt-1 md:mt-2 font-normal text-left">
                   {idioma === 'es' 
                     ? 'En ViOs Code, no solo desarrollamos software; construimos ecosistemas inmersivos. Fusionamos la gestión empresarial de alto nivel con tecnologías de vanguardia como web3, realidad virtual y escaneo 3D.'
                     : 'At ViOs Code, we don\'t just develop software; we build immersive ecosystems. We merge high-level business management with cutting-edge technologies like web3, virtual reality, and 3D scanning.'}
@@ -251,8 +252,8 @@ export default function ViosCodeMatriz() {
                 </p>
               </div>
             </div>
-            <div className="md:hidden w-full flex justify-center mt-6">
-              <p className="text-gray-700 text-xs leading-relaxed font-normal text-left w-full px-1">
+            <div className="md:hidden w-full flex justify-center mt-4">
+              <p className="text-gray-700 text-[10px] leading-relaxed font-normal text-left w-full px-1">
                 {idioma === 'es'
                   ? 'Nuestro objetivo es llevar los negocios físicos de la Riviera Maya y del mundo hacia la siguiente dimensión del comercio digital.'
                   : 'Our goal is to take physical businesses from the Riviera Maya and the world into the next dimension of digital commerce.'}
@@ -260,20 +261,20 @@ export default function ViosCodeMatriz() {
             </div>
           </div>
 
-          <div className="w-full border-t border-gray-100 pt-16 animate-[fadeIn_1.2s_ease-in-out]">
-            <div className="flex flex-row items-center md:items-start gap-6 md:gap-16 w-full">
-              <div className="w-24 md:w-44 shrink-0 relative">
-                <img src="/dir_grafic_rafa.jpeg" alt="Rafael Villanueva Cortes" className="w-full h-auto rounded-xl shadow-lg border border-gray-200 grayscale hover:grayscale-0 transition-all duration-700" />
+          <div className="w-full border-t border-gray-100 pt-12 animate-[fadeIn_1.2s_ease-in-out]">
+            <div className="flex flex-row items-center md:items-start gap-4 md:gap-10 w-full justify-center">
+              <div className="w-20 md:w-32 shrink-0 relative">
+                <img src="/dir_grafic_rafa.jpeg" alt="Rafael Villanueva Cortes" className="w-full h-auto rounded-xl shadow-md border border-gray-200 grayscale hover:grayscale-0 transition-all duration-700" />
               </div>
               
-              <div className="flex-1 flex flex-col gap-1 md:gap-3 text-left text-black">
+              <div className="flex-1 flex flex-col gap-1 md:gap-2 text-left text-black max-w-xl">
                 <div className="flex flex-col">
-                  <h3 className="font-montserrat text-sm md:text-3xl font-bold text-gray-800">Rafael Villanueva Cortes</h3>
-                  <h4 className="font-montserrat text-[9px] md:text-sm tracking-[0.2em] font-bold uppercase text-[#d4af37] mt-1">
+                  <h3 className="font-montserrat text-xs md:text-xl font-bold text-gray-800">Rafael Villanueva Cortes</h3>
+                  <h4 className="font-montserrat text-[8px] md:text-xs tracking-[0.2em] font-bold uppercase text-[#d4af37] mt-1">
                     {idioma === 'es' ? 'Director de Diseño Gráfico' : 'Graphic Design Director'}
                   </h4>
                 </div>
-                <p className="text-gray-600 text-[10px] md:text-base leading-relaxed max-w-xl font-light italic">
+                <p className="text-gray-600 text-[9px] md:text-sm leading-relaxed max-w-lg font-light italic mt-1">
                   {idioma === 'es'
                     ? 'Arquitecto visual del ecosistema. Lidera la creación de identidades de alto impacto, asegurando que la estética de cada proyecto en el multiverso sea impecable y vanguardista.'
                     : 'Visual architect of the ecosystem. Leads high-impact identity creation, ensuring that the aesthetics of every project in the multiverse are flawless and cutting-edge.'}
