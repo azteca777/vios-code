@@ -201,13 +201,16 @@ export default function ViosCodeMatriz() {
                   <img src="/salsas_ketzzal.jpeg" alt="Salsas Ketzzal" className="h-12 md:h-24 w-auto object-contain" />
                </a>
                <a href={URL_VIRTUAL_PLANET} target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-105">
-                  <img src="/magnolia.jpeg" alt="Magnolia" className="h-12 md:h-24 w-auto object-contain" />
+                  <img src="/logo_loyaltink.jpeg" alt="Magnolia" className="h-12 md:h-24 w-auto object-contain" />
                </a>
                <a href={URL_VIRTUAL_PLANET} target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-105">
                   <img src="/bernardita.jpeg" alt="Bernardita" className="h-12 md:h-24 w-auto object-contain" />
                </a>
                <a href={URL_VIRTUAL_PLANET} target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-105">
                   <img src="/templo_de_pieles.jpeg" alt="Templo de Pieles" className="h-12 md:h-24 w-auto object-contain" />
+               </a>
+               <a href={URL_VIRTUAL_PLANET} target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-105">
+                  <img src="/logo_chaza.png" alt="Templo de Pieles" className="h-12 md:h-24 w-auto object-contain" />
                </a>
             </div>
           </div>
