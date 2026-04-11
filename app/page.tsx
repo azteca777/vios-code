@@ -281,7 +281,7 @@ export default function ViosCodeMatriz() {
 
         </section>
 
-        {/* 📊 SECCIÓN 2: PITCH COMERCIAL */}
+        {/* 📊 SECCIÓN 2: PITCH COMERCIAL (GENERAL) */}
         <section className="px-4 md:px-8 w-full max-w-[95%] 2xl:max-w-[90%] mx-auto mb-32 flex flex-col items-center">
           <div className="w-full flex items-center justify-between mb-8">
             <h2 className="font-montserrat text-2xl md:text-4xl font-bold tracking-wide text-black">
@@ -291,10 +291,17 @@ export default function ViosCodeMatriz() {
           </div>
           <div className="w-full bg-white p-2 md:p-3 rounded-3xl border border-gray-200 shadow-[0_0_40px_rgba(212,175,55,0.1)] relative group transition-all duration-300 hover:shadow-[0_0_60px_rgba(212,175,55,0.2)]">
             <iframe 
-              src={idioma === 'es' ? "https://gamma.app/embed/qckwr0gsgl9a8gv" : "https://gamma.app/embed/1smkc5wzbe09g48"} 
+              // 🔄 Cambio dinámico de URL según el idioma seleccionado
+              src={idioma === 'es' 
+                ? "https://gamma.app/embed/35iitib1ydegd4v" // URL Español
+                : "https://gamma.app/embed/b1zehx0r0bw2h6h" // URL Inglés
+              } 
               className="w-full h-[550px] md:h-[800px] lg:h-[850px] rounded-2xl relative z-10 bg-white transition-all duration-500 border border-gray-100" 
               allowFullScreen 
-              title={idioma === 'es' ? "El Futuro del Comercio: Tu Negocio en la Siguiente Dimensión" : "The Future of Commerce: Your Business in the Next Dimension"}
+              title={idioma === 'es' 
+                ? "ViOs Code: Redefiniendo la Realidad Digital" 
+                : "ViOs Code: Redefining Digital Reality"
+              }
             ></iframe>
           </div>
         </section>
