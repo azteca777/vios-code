@@ -4,6 +4,8 @@
 @theme {
   --font-inter: var(--font-inter);
   --font-montserrat: var(--font-montserrat);
+  /* NUEVA: Agregamos la variable de Cormorant Garamond respetando las demás */
+  --font-cormorant: var(--font-cormorant);
 }
 
 :root {
@@ -16,6 +18,10 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* NUEVA: Conectamos Cormorant a la clase predeterminada 'font-serif' */
+  --font-serif: var(--font-cormorant);
+  /* NUEVA: Aseguramos que la clase 'font-montserrat' se genere correctamente */
+  --font-montserrat: var(--font-montserrat);
 }
 
 @media (prefers-color-scheme: dark) {
