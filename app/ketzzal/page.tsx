@@ -1,7 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabaseKetzzal } from '@/lib/supabase'; // Asegúrate de que esta ruta sea la correcta
+import { supabaseKetzzal } from '@/lib/supabase';
+import Image from 'next/image';
+
+interface BatchUpdate {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  created_at: string;
+}
 
 interface KetzzalBatch {
   id: string;
@@ -15,6 +24,7 @@ interface KetzzalBatch {
   habanero_bonus_yield: number;
   scorpion_bonus_yield: number;
   token_price: number;
+  updates?: BatchUpdate[];
 }
 
 export default function KetzzalMarketplace() {
@@ -24,26 +34,43 @@ export default function KetzzalMarketplace() {
   const [tier, setTier] = useState<'Serrano' | 'Habanero' | 'Escorpión'>('Serrano');
   const [processingId, setProcessingId] = useState<string | null>(null);
 
-  // 1. Obtener datos reales de Supabase
   useEffect(() => {
-    const fetchBatches = async () => {
-      const { data, error } = await supabaseKetzzal
+    const fetchBatchesAndUpdates = async () => {
+      // 1. Traer los lotes
+      const { data: batchesData, error: batchesError } = await supabaseKetzzal
         .from('ketzzal_batches')
         .select('*')
-        .eq('status', 'funding'); // Filtramos para mostrar solo los que buscan capital
+        .eq('status', 'funding');
 
-      if (error) {
-        console.error('Error al obtener los lotes:', error);
-      } else if (data) {
-        setBatches(data);
+      if (batchesError) {
+        console.error('Error lotes:', batchesError);
+        return;
+      }
+
+      // 2. Traer la trazabilidad (actualizaciones)
+      const { data: updatesData, error: updatesError } = await supabaseKetzzal
+        .from('ketzzal_batch_updates')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (updatesError) {
+        console.error('Error trazabilidad:', updatesError);
+      }
+
+      // 3. Unir los datos
+      if (batchesData) {
+        const combinedBatches = batchesData.map(batch => ({
+          ...batch,
+          updates: updatesData ? updatesData.filter(u => u.batch_id === batch.id) : []
+        }));
+        setBatches(combinedBatches);
       }
       setLoading(false);
     };
 
-    fetchBatches();
+    fetchBatchesAndUpdates();
   }, []);
 
-  // 2. Observador Automático de Niveles de Picante (Gamificación)
   useEffect(() => {
     if (amount < 25000) {
       setTier('Serrano');
@@ -56,9 +83,8 @@ export default function KetzzalMarketplace() {
 
   const handleInvest = async (batch: KetzzalBatch) => {
     setProcessingId(batch.id);
-    // Aquí luego conectaremos el INSERT a la base de datos
     setTimeout(() => {
-      alert(`¡Inversión exitosa en Salsas Ketzzal! Has adquirido ${(amount / batch.token_price).toFixed(2)} Tokens del ${batch.batch_name}.`);
+      alert(`¡Inversión exitosa! Has adquirido ${(amount / batch.token_price).toFixed(2)} Tokens del ${batch.batch_name}.`);
       setProcessingId(null);
     }, 1500);
   };
@@ -77,7 +103,6 @@ export default function KetzzalMarketplace() {
           <p className="text-gray-400 mt-2 font-medium uppercase tracking-widest text-sm italic">Fondo de Producción Gastronómica</p>
         </div>
         
-        {/* Indicador Automático Gamificado */}
         <div className="bg-[#1a0f0f] p-1 rounded-2xl border border-red-900/30 flex gap-2">
           {(['Serrano', 'Habanero', 'Escorpión'] as const).map((t) => (
             <div 
@@ -98,12 +123,9 @@ export default function KetzzalMarketplace() {
       <main className="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-2 gap-12">
         {batches.map((batch) => {
           const tokens = amount / batch.token_price;
-          
-          // 3. Cálculo matemático de rendimientos conectado a la BD
           let bonusYield = 0;
           if (tier === 'Habanero') bonusYield = batch.habanero_bonus_yield;
           if (tier === 'Escorpión') bonusYield = batch.scorpion_bonus_yield;
-          
           const totalYield = batch.base_yield_percentage + bonusYield;
           const estimatedProfit = amount * (totalYield / 100);
           const progress = (batch.current_capital / batch.target_capital) * 100;
@@ -141,35 +163,51 @@ export default function KetzzalMarketplace() {
                   </div>
 
                   <div className="flex justify-between items-center py-4 border-t border-white/5">
-                    <span className="text-sm text-gray-400 italic">Retorno estimado (Venta Gastronómica):</span>
+                    <span className="text-sm text-gray-400 italic">Retorno estimado:</span>
                     <span className="text-xl font-bold text-emerald-400">${(amount + estimatedProfit).toLocaleString('es-MX')} MXN</span>
-                  </div>
-                </div>
-
-                <div className="space-y-3 mb-10">
-                  <div className="flex justify-between text-xs font-bold uppercase tracking-tighter">
-                    <span className="text-gray-500">Producción Fondeada</span>
-                    <span className="text-white">{progress.toFixed(1)}%</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-gray-900 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-[#8a1c1c] via-[#e63946] to-[#ff5959] transition-all duration-1000" 
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
-                  <div className="flex justify-between text-[10px] text-gray-500">
-                     <span>${batch.current_capital.toLocaleString('es-MX')} MXN</span>
-                     <span>Meta: ${batch.target_capital.toLocaleString('es-MX')} MXN</span>
                   </div>
                 </div>
 
                 <button 
                   onClick={() => handleInvest(batch)}
                   disabled={processingId === batch.id}
-                  className="w-full py-5 bg-white text-[#990000] text-lg font-black rounded-2xl hover:bg-[#e63946] hover:text-white transition-all transform active:scale-95 shadow-[0_20px_40px_rgba(230,57,70,0.1)] disabled:opacity-50"
+                  className="w-full py-5 mb-10 bg-white text-[#990000] text-lg font-black rounded-2xl hover:bg-[#e63946] hover:text-white transition-all shadow-[0_20px_40px_rgba(230,57,70,0.1)]"
                 >
-                  {processingId === batch.id ? 'FIRMANDO CONTRATO...' : 'FINANCIAR LOTE KETZZAL'}
+                  {processingId === batch.id ? 'FIRMANDO...' : 'FINANCIAR LOTE KETZZAL'}
                 </button>
+
+                {/* SECCIÓN DE TRAZABILIDAD (NUEVO) */}
+                <div className="mt-8 border-t border-red-900/30 pt-8">
+                  <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">Prueba de Producción (Trazabilidad)</h3>
+                  
+                  {batch.updates && batch.updates.length > 0 ? (
+                    <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-red-900/50 before:to-transparent">
+                      {batch.updates.map((update) => (
+                        <div key={update.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                          <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-[#e63946] bg-[#0a0505] text-slate-500 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-[0_0_10px_rgba(230,57,70,0.8)]"></div>
+                          
+                          <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-[#110909] border border-red-900/30 p-4 rounded-xl shadow-lg">
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-bold text-[#f5e6e6] text-sm">{update.title}</h4>
+                              <time className="text-[10px] text-[#d4af37] font-mono">{new Date(update.created_at).toLocaleDateString('es-MX')}</time>
+                            </div>
+                            <p className="text-xs text-gray-400 mb-3">{update.description}</p>
+                            {update.image_url && (
+                              <img 
+                                src={update.image_url} 
+                                alt={update.title} 
+                                className="w-full h-32 object-cover rounded-lg border border-white/5 opacity-80 hover:opacity-100 transition-opacity"
+                              />
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-500 italic text-center">Fondeo activo. La producción comenzará pronto.</p>
+                  )}
+                </div>
+
               </div>
             </div>
           );
